@@ -16,8 +16,8 @@ library(lubridate)
 
 
 ```{r Glimpse}
-BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
-load(file.path(BW_Rdat_path,"BW_list_tbl.RData"))
+path_Rdat<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
+load(file.path(path_Rdat,"BW_list_tbl.RData"))
 summary(BW_list_tbl)%>% kable()
 ```
 22 Sampling stations in Baden-Wuerttemberg have been selected for analysis of concentrations of atmospheric constituents. 3 stations. sampling in rural environments,3 stations located at main streets, 16 sampling urban background immissions
