@@ -1,0 +1,98 @@
+---
+title: "Classification of Immission Measurements"
+author: "Dr. Alf Loeffler"
+date: "10/31/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(lubridate)
+```
+
+## Classification of Immission Measurements in Baden Wuertemberg
+
+
+```{r Glimpse}
+BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
+load(file.path(BW_Rdat_path,"BW_list_tbl.RData"))
+summary(BW_list_tbl)%>% kable()
+```
+22 Sampling stations in Baden-Wuerttemberg have been selected for analysis of concentrations of atmospheric constituents. 3 stations. sampling in rural environments,3 stations located at main streets, 16 sampling urban background immissions
+```{r stations,echo = FALSE}
+station.names<-names(BW_list_tbl)
+rural.stations<- c("Alb","Odw","Sws")
+trafic.stations <- c("Lbg_Friedr","Nck","Rt_leder")
+urban.backgrd.stations<- station.names%>% setdiff(c(rural.stations,trafic.stations))
+print("rural stations :")
+print(rural.stations)
+print("trafic.stations: ")
+print(trafic.stations)
+print("urban background:")
+print(urban.backgrd.stations)
+```
+```{r echo =FALSE}
+comp_detect <- function(df,cmp) {
+  exst<- cmp %in% names(df)
+  return(exst)
+}
+# plot  function for all stations
+plt_NO2_trnd <- function(df) {
+  df<-df%>% as_tibble()
+  ifelse (comp_detect(df,"NO2"),
+          {df <- na.omit(df)
+  plt <-ggplot(df,aes(x= datetime,y=NO2))+
+    geom_point(size = 0.001)+
+    geom_smooth(method= "lm",col = "red")+
+    ggtitle("NO2-immissions 20 years Trend",
+    subtitle = paste(first(df$name),first(df$station)))},NA
+    )
+  plt
+}
+plt_NO2_trnd(BW_list_tbl$Stg_Hoh)
+```
+
+```{r include=FALSE}
+BW_mean_NO2<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"NO2"),
+                                                  mean(x$NO2,na.rm=TRUE),NA)))
+BW_median_NO2<- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"NO2"),
+                                                  median(x$NO2,na.rm=TRUE),NA )))
+BW_var_NO2 <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect (x,"NO2"),
+                                                  var(x$NO2,na.rm=TRUE),NA)))
+BW_mean_WG <- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"WG"),
+                                                  mean(x$WG,na.rm=TRUE),NA )))
+BW_var_WG <-map_dbl(BW_list_tbl,function(x) (ifelse(comp_detect (x,"WG"),
+                                                  var(x$WG,na.rm=TRUE),NA) ))
+BW_mean_O3<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"O3"),
+                                                         mean(x$O3,na.rm=TRUE),NA)))
+BW_median_O3<- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"O3"),
+                                                         median(x$O3,na.rm=TRUE),NA )))
+BW_var_O3 <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect (x,"O3"),
+                                                        var(x$O3,na.rm=TRUE),NA)))
+
+BW_statistic <- tibble (Station =  names(BW_list_tbl),
+                                NO2_mean=  BW_mean_NO2,
+                                NO2_median=BW_median_NO2,
+                                NO2_var =  BW_var_NO2,
+                                WG_mean =  BW_mean_WG,
+                                WG_var =   BW_var_WG,
+                                O3_mean =  BW_mean_O3,
+                                O3_median= BW_median_O3,
+                                O3_var =   BW_var_O3)
+```
+Key  immissions data from 22 sampling stations 
+```{r echo =FALSE}
+BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
+
+```
+The table is arranged in ascending order of **mean NO2 immissions measurements** made  and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). In the rural environment 20 year mean immissions are less than  $10 μg/m^3$. the urban background immissions range from $20 [μg/m^3]$. Mean immissions at samplingstations close to main traffic streets are bigger than $40 [μg/m^3]$.
+
+
+
+
+
+
+
+
