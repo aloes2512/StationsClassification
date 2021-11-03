@@ -1,4 +1,3 @@
-.Rproj.user
 # History files
 .Rhistory
 .Rapp.history
@@ -41,3 +40,4 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 >>>>>>> ecd5829957168d3814017977bcd1be1de152ec1f
+.Rproj/user
