@@ -2,7 +2,9 @@
 title: "Classification of Immission Measurements"
 author: "Dr. Alf Loeffler"
 date: "10/31/2021"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -63,7 +65,7 @@ plt_NO2_trnd <- function(df) {
 plt_NO2_trnd(BW_list_tbl$Stg_Hoh)
 ```
 
-![Hohenheimer Strasse] "~/plots/Stg_Hoh_20_y_NO2.png"
+
 ```{r echo=FALSE}
 BW_mean_NO2<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"NO2"),
                                                   mean(x$NO2,na.rm=TRUE),NA)))
@@ -100,7 +102,9 @@ BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 The table is arranged in ascending order of **mean NO2 immissions measurements** made  and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). In the rural environment 20 year mean immissions are less than  $10 [μg/m^3]$. the urban background immissions range from $20 [μg/m^3]$. Mean immissions at samplingstations close to main traffic streets are bigger than $40 [μg/m^3]$.
 
 
-
+<img src="/plots/Stg_Hoh_20_y_NO2.png" 
+alt="Stg_Hoh_20_y_NO2.png" 
+style="height: 100px; width:100px;"/>
 
 
 
