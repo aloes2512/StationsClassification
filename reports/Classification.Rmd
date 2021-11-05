@@ -73,9 +73,8 @@ plt_NO2_trnd <- function(df) {
     ggtitle("NO2-immissions 20 years Trend",
     subtitle = paste(first(df$name),first(df$station)))},NA
     )
-  plt
+
 }
-plt_NO2_trnd(BW_list_tbl$Stg_Hoh)
 ```
 
 
@@ -115,7 +114,7 @@ BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 The table is arranged in ascending order of **mean NO2 immissions measurements** made  and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). In the rural environment 20 year mean immissions are less than  $10 [μg/m^3]$. the urban background immissions range from $20 [μg/m^3]$. Mean immissions at samplingstations close to main traffic streets are bigger than $40 [μg/m^3]$.
 
 
-![](figs/BW_Uebersichtskarte.png)
+
 
 
 
