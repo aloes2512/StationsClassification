@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE }
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(knitr)
@@ -18,14 +18,26 @@ library(lubridate)
 
 
 ```{r echo =FALSE}
-path_Rdat<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
-load(file.path(path_Rdat,"BW_list_tbl.RData"))
-
+Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
+load(file.path(Rdat_path,"BW_list_tbl.RData"))
+load(file.path(Rdat_path,"stationlist.RData"))
+BW_list_tbl
 ```
-22 Sampling stations in Baden-Wuerttemberg have been selected for analysis of concentrations of atmospheric constituents. 3 stations. sampling in rural environments,3 stations located at main streets, 16 sampling urban background immissions. 
+
+19 sampling stations operated by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) have been selected for analysis of concentrations of atmospheric constituents.
+
+```{r echo = FALSE}
+knitr::kable(Stationsliste)
+```
+
+3 sampling stations rural environments, 3 stations located at main streets, 16 sampling urban background immissions. 
 An overview of the locations:
 
-![Uebersichtskarte BW] "~/plots/BW_Uebersichtskarte.png"
+
+![](figs/BW_Uebersichtskarte.png)
+
+
+
 
 
 
@@ -33,17 +45,18 @@ An overview of the locations:
 
 
 ```{r stations,echo = FALSE}
-station.names<-names(BW_list_tbl)
+station.names<-names(BW_list_tbl)# 22 stations
 rural.stations<- c("Alb","Odw","Sws")
 trafic.stations <- c("Lbg_Friedr","Nck","Rt_leder")
 urban.backgrd.stations<- station.names%>% setdiff(c(rural.stations,trafic.stations))
-print("rural stations :")
-print(rural.stations)
-print("trafic.stations: ")
-print(trafic.stations)
-print("urban background:")
-print(urban.backgrd.stations)
+stations<- list(rural= rural.stations,
+                urban= urban.backgrd.stations,
+                trafic= trafic.stations)
+load( file.path(path_Rdat,"stationlist.RData"))
+
 ```
+
+
 ```{r echo =FALSE}
 comp_detect <- function(df,cmp) {
   exst<- cmp %in% names(df)
@@ -102,9 +115,7 @@ BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 The table is arranged in ascending order of **mean NO2 immissions measurements** made  and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). In the rural environment 20 year mean immissions are less than  $10 [μg/m^3]$. the urban background immissions range from $20 [μg/m^3]$. Mean immissions at samplingstations close to main traffic streets are bigger than $40 [μg/m^3]$.
 
 
-<img src="/plots/Stg_Hoh_20_y_NO2.png" 
-alt="Stg_Hoh_20_y_NO2.png" 
-style="height: 100px; width:100px;"/>
+![](figs/BW_Uebersichtskarte.png)
 
 
 
