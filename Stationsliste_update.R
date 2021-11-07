@@ -1,22 +1,36 @@
+library(tidyverse)
+library(knitr)
+library(lubridate)
 path_Rdat<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
+load(file.path(path_Rdat,"stationlist.RData"))
 load(file.path(path_Rdat,"Stationsliste.RData"))
-load(file.path(path_Rdat,"BW_list_tbl.RData"))
+
+head(stationlist,20)
+Stationsliste<- stationlist%>% 
+  right_join(Stationsliste, by=c("ID"="Stationsnummer","Messstelle","Ost_UTM","Nord_UTM"))#
+saveRDS(Stationsliste,file.path(path_Rdat,"Stationsliste.rds"))  
+Stationsliste%>% tail(15)
 head(Stationsliste,19)
 NROW(Stationsliste)
+load("~/Documents/Luftqualitaet/Daten/BW_Rdat/BW_list_tbl.RData")
 NROW(BW_list_tbl)
-BW_list_tbl[[4]]$station<-BW_list_tbl[[4]]$station%>% droplevels()%>% factor()
-BW_list_tbl<-BW_list_tbl%>% map(~ mutate(.,station = station%>% droplevels()%>%factor()))
-head(BW_list_tbl[[22]])
+saveRDS(BW_list_tbl,"~/Documents/Luftqualitaet/Daten/BW_Rdat/BW_list_tbl.rds" )
+BW_list_tbl<-readRDS("~/Documents/Luftqualitaet/Daten/BW_Rdat/BW_list_tbl.rds")
+head(BW_list_tbl)
+
+#BW_list_tbl<-BW_list_tbl%>% map(~ mutate(.,station = station%>% droplevels()%>%factor()))
+
 summary(BW_list_tbl)                  
 summary(BW_list_tbl[[6]])
-BW_list_tbl<-BW_list_tbl%>% map(~ mutate(.,name = name%>% factor()%>% droplevels()))                     
-save(BW_list_tbl, file=file.path(path_Rdat,"BW_list_tbl.RData"))
+#BW_list_tbl<-BW_list_tbl%>% map(~ mutate(.,name = name%>% factor()%>% droplevels()))                     
+
 names(BW_list_tbl)
 BW_list_tbl[[4]]$name%>%levels()
 BW_list_tbl%>% map_chr(~.$name %>% levels())
 BW_list_tbl%>% map_chr(~.$station %>% levels())
 lookup<- tibble(name = BW_list_tbl%>% map_chr(~.$name %>% levels())%>%factor(),
                 ID = BW_list_tbl%>% map_chr(~.$station %>% levels())%>%factor())
+#
 NROW(lookup)#22
 namedlist<-lookup%>% left_join(Stationsliste, by=c("ID"="Stationsnummer"))
 NROW(namedlist)#22
