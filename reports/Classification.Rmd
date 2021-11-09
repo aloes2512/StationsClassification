@@ -144,7 +144,7 @@ kable(NO2_chg.py,digits =1)
 
 ```
 
-The rate of mean yearly reductions ranges from $-5.1[μg/m^3]$ at the Hauptstätterstrasse and no change at all $0 [μg/m^3]$at the sampling station Schwarzwald-Süd
+The rate of mean yearly reductions ranges from $-5.1[μg/m^3]$ at the Hauptstätter strasse and no change at all $0 [μg/m^3]$at the sampling station Schwarzwald-Süd
 
 
 
