@@ -2,12 +2,14 @@ library(tidyverse)
 library(knitr)
 library(lubridate)
 path_Rdat<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
-load(file.path(path_Rdat,"stationlist.RData"))
+readRDS(file.path(path_Rdat,"stationlist.rds"))
 load(file.path(path_Rdat,"Stationsliste.RData"))
-
+Stationsliste%>% head()
+saveRDS(stationlist,file.path(path_Rdat,"stationlist.rds"))
 head(stationlist,20)
+stationslist%>% filter(name == Brn)
 Stationsliste<- stationlist%>% 
-  right_join(Stationsliste, by=c("ID"="Stationsnummer","Messstelle","Ost_UTM","Nord_UTM"))#
+  right_join(Stationsliste, by=c("ID"="Stationsnummer","Messstelle"))#
 saveRDS(Stationsliste,file.path(path_Rdat,"Stationsliste.rds"))  
 Stationsliste%>% tail(15)
 head(Stationsliste,19)
@@ -64,3 +66,19 @@ stationlist$name%>% levels()
 stationlist$name<-stationlist$name%>% recode_factor("Can"= "Stg_Can")
 save(stationlist,file = file.path(path_Rdat,"stationlist.RData"))
 BW_list_tbl%>% subset(!(name %>% c("Stg_Schwz","Stg_SZ_afu")))
+
+## Messstelle Name
+Messt_name<- function (df) { 
+  nm <- stationlist%>% filter(name == (df$name%>%
+                                                         first()%>% 
+                                                         as.character())) %>% 
+                                                    select(Messstelle)
+return(nm)
+}
+Messt_name(BW_list_tbl$Heid)
+Stationsliste%>% tail()
+Stationsliste[29,]
+Stationsliste<-Stationsliste%>% mutate(name= as.character(name))
+Stationsliste[29,]$name<- "Stg_Hpt2"
+Stationsliste<-Stationsliste%>% mutate(name= as_factor(name))
+saveRDS(Stationsliste,file.path(path_Rdat,"Stationsliste.rds"))

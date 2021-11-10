@@ -18,12 +18,12 @@ library(lubridate)
 
 
 ```{r echo =FALSE}
-path_Rdat<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
-load(file.path(path_Rdat,"BW_list_tbl.RData"))
-load(file.path(path_Rdat,"stationlist.RData"))
+BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
+BW_list_tbl <-readRDS(file.path(BW_Rdat_path,"BW_list_tbl.rds"))
+Stationsliste <-readRDS(file.path(BW_Rdat_path,"BW_Stationsliste.rds"))
 ```
 ## location  of selected sampling stations
-19 sampling stations operated by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) have been selected for analysis of concentrations of atmospheric constituents.In addition two stations operated by the "Amt für Umweltschutz" of the city of Stuttgart
+20 sampling stations operated by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) have been selected for analysis of concentrations of atmospheric constituents.In addition two stations operated by the "Amt für Umweltschutz" of the city of Stuttgart.
 
 ```{r echo = FALSE}
 knitr::kable(stationlist)
@@ -51,13 +51,13 @@ urban.backgrd.stations<- station.names%>% setdiff(c(rural.stations,trafic.statio
 stations<- list(rural= rural.stations,
                 urban= urban.backgrd.stations,
                 trafic= trafic.stations)
-load( file.path(path_Rdat,"stationlist.RData"))
+readRDS( file.path(path_Rdat,"Stationsliste.rds"))
 ```
 
 
 As an example  1-h mean values, measured at Stuttgart  "Hohenheimer Strasse" at the roadside of a main traffic road "Bundesstrasse 27".   The 1- h means are plotted together with linear regression line over 20 years:
 
-![Stg_Hoh](./figs/NO2_trend_20y_Hohenh_str.png)
+![Stg_Hoh](./figs/NO2_trend_20_years_Stuttgart_Hohenheimer_Straße.png)
 
 The following should be noted:    
 -- the range of measurements covers only less than 6 years 2015-01-01 to 2021-10-01    
@@ -144,7 +144,7 @@ kable(NO2_chg.py,digits =1)
 
 ```
 
-The rate of mean yearly reductions ranges from $-5.1[μg/m^3]$ at the Hauptstätter strasse and no change at all $0 [μg/m^3]$at the sampling station Schwarzwald-Süd
+The rate of mean yearly reductions ranges from $-5.1[μg/(m^3*y)]$ at the Hauptstätter strasse and no change at all $0 [μg/(m^3*y)]$ at the sampling station Schwarzwald-Süd
 
 
 
