@@ -26,10 +26,10 @@ Stationsliste <-readRDS(file.path(BW_Rdat_path,"BW_Stationsliste.rds"))
 20 sampling stations operated by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) have been selected for analysis of concentrations of atmospheric constituents.In addition two stations operated by the "Amt für Umweltschutz" of the city of Stuttgart.
 
 ```{r echo = FALSE}
-knitr::kable(stationlist)
+knitr::kable(Stationsliste)
 ```
 
-3 sampling stations are located in rural environment,    5 stations located at main streets,    11 sampling urban background immissions.   The stations of the city of Stuttgart are located well above the street level. This has to be observed interpreting the data.   
+3 sampling stations are located in rural environment,    7 stations located at main streets,    13 sampling urban background immissions.   The 2 stations operated by  the city of Stuttgart are located well above the street level. This has to be observed interpreting the data.   
 An overview of the locations:
 
 
@@ -51,19 +51,21 @@ urban.backgrd.stations<- station.names%>% setdiff(c(rural.stations,trafic.statio
 stations<- list(rural= rural.stations,
                 urban= urban.backgrd.stations,
                 trafic= trafic.stations)
-readRDS( file.path(path_Rdat,"Stationsliste.rds"))
+readRDS( file.path(BW_Rdat_path,"Stationsliste.rds"))
 ```
 
 
 As an example  1-h mean values, measured at Stuttgart  "Hohenheimer Strasse" at the roadside of a main traffic road "Bundesstrasse 27".   The 1- h means are plotted together with linear regression line over 20 years:
 
-![Stg_Hoh](./figs/NO2_trend_20_years_Stuttgart_Hohenheimer_Straße.png)
+![Stg_Hoh](./figs/NO2_trend_20_years_Stuttgart Hohenheimer Straße.png)
 
 The following should be noted:    
--- the range of measurements covers only less than 6 years 2015-01-01 to 2021-10-01    
--- there is no period with zero 1-h measurements for several month until 2019    
--- as will be seen later the reduction of immissions was very different over time    
--- there are strong outliers, which need interpretation ore exclusion before judged to be critical or not   
+-- the range of measurements covers only less than 17 years 2004-01-02 to 2021-10-01    
+-- there are long period with zero 1-h measurements    
+-- as will be seen later the reduction of immissions began 2010.
+-- the rate of reductions per year was very different
+-- there are strong outliers, which need interpretation 
+-- variance of measurements changed with time
 
 
 
@@ -101,7 +103,10 @@ BW_statistic <- tibble (Station =  names(BW_list_tbl),
                                 O3_median= BW_median_O3,
                                 O3_var =   BW_var_O3)
 ```
-## Key  immissions data from 22 sampling stations 
+## Key  immissions data from 23 sampling stations 
+
+Mean values, variance and median of $NO_2$ and $O_3$ concentrations are very different for the 23 stations analyzed: 
+
 ```{r echo =FALSE}
 BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 
@@ -111,10 +116,12 @@ The table is arranged in ascending order of **mean NO2 immissions measurements**
 -- urban background immissions range from $10 [μg/m^3]$ to $30 [μg/m^3]$.    
 -- 20-years mean immissions  close to main traffic streets are bigger than $40 [μg/m^3]$.
 
-## linear trends at various stations
+## linear trends of immissions at sampling stations
 
 
 ![BW_NO2 trends](./figs/BW_NO2_linear_regression.png)
+
+
 This summary view shows 
 -- that the average immissions at the three rural stations stay below $10 [μg/m^3]$   
 -- at the rural stations the mean values are nearly independent of the time 
@@ -147,7 +154,13 @@ kable(NO2_chg.py,digits =1)
 The rate of mean yearly reductions ranges from $-5.1[μg/(m^3*y)]$ at the Hauptstätter strasse and no change at all $0 [μg/(m^3*y)]$ at the sampling station Schwarzwald-Süd
 
 
+## monthly trends show considerable variations
 
+As example of smoothed values average NO2 immissions at Stuttgart Am Neckartor did increase from 2004 to 2005 with a sharp decrease following, which was interrupted in 2010 followed again by a strong decrease.
+All urban sampling stations measured a strong reduction of immissions around 2015/2016. Some exceptions may be related to local actions as limiting the traffic to lower speeds or emissions from construction work, using heavy-duty machinery (new underground railway station __Stuttgart 21__). Which increased emissions and had an effect on the immissions at the nearby sampling station __Stg. Klettplatz__.
+
+
+![](figs/BW_NO2_Immissions_average.png)
 
 
 
