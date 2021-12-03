@@ -1,7 +1,6 @@
 # reference file mgcviz.rmd 
 library(lubridate)
 library(tidyverse)
-library(data.table)
 library(mgcv)
 library(car)
 library(grid)
@@ -13,9 +12,9 @@ dat_path = "/Users/alfloeffler/Documents/Luftqualitaet/Daten/BW_Rdat"
 BW_list_tbl<-readRDS(file.path(dat_path,"BW_list_tbl.rds"))
 Can_Dat<- BW_list_tbl$Stg_Can%>% 
   dplyr::select(datetime,NO2)%>% mutate(hr= format(datetime,"%H"), wday= as_factor(format(datetime, "%w")),KWeek= format(datetime,"%W"))
+summary(Can_Dat)# NO2 Data from 2000 to 2020
 Can_Dat_11 <- Can_Dat %>% subset( datetime > ymd("2011-01-01"))%>% subset(datetime<=ymd("2011-12-31") )
 Can_Dat_15_16<-Can_Dat %>% subset( datetime > ymd("2015-01-01"))%>% subset(datetime<=ymd("2016-12-31") )
-
 Can_Dat_11 %>% ggplot(aes(x= datetime, y= NO2))+
   geom_line(alpha = 0.4)+
   geom_smooth(method ="gam",formula=  y~ s(x, k = 6), col = "red", mapping = aes(x=datetime,y=NO2),data = Can_Dat_11)

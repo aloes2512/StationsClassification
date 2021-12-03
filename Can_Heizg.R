@@ -4,6 +4,7 @@ library(modelr)# add_predictions
 library(xts)
 library(mgcv)
 library(mgcViz)
+library(broom)
 # Data path
 dat_path = "/Users/alfloeffler/Documents/Luftqualitaet/Daten/BW_Rdat"
 list.files(dat_path)
@@ -127,20 +128,18 @@ summary(NO2_dat_gam)
 ## plot
 # smooth components using the sm function
 plot(sm(NO2_dat_gam,1))+
-  ggtitle("Bad Cannstatt:  effect ofof smoothed NO on NO2")+
-  l_fitLine(col = "red")
+  ggtitle("Bad Cannstatt: mean effect of NO on NO2")+
+  l_fitLine(col = "red")+
   l_ciLine(col = "blue")+
-  l_points(size = 0.01)
+  l_points(size = 0.01)+
+  labs( x="NO [μg/m3]")
 plot(sm(NO2_dat_gam,2))+ggtitle("Bad Cannstatt:  effect of smoothed O3  on NO2")+
   l_fitLine(col = "red")+
 l_ciLine(col = "blue")+
-  l_points(size = 0.01)
+  l_points(size = 0.01,alpha= 0.5)
 # Plot all Terms
-
-
 plot(sm(NO2_dat_gam,3))+ ggtitle("Bad Cannstatt:  effect of smoothed Temperature on NO2")+
   l_fitLine(col = "red")+
   l_ciLine(col = "blue")+
   l_points(size = 0.01)
 # periodicity
-NO2_period<-NO2_dat
