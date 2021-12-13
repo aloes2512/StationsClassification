@@ -26,10 +26,9 @@ levels(Can_Dat_11$wday) <- c("Sunday","Monday","Tuesday","Wednesday","Thursday",
 N<- NROW(Can_Dat_11)# N = 8736= 364*24
 wndw <- N/364 # 364 Tage
 Can_table <- tibble(NO2 = Can_Dat_11$NO2,
-                         HR = as.numeric(Can_Dat_11$hr),
+                         HR = as.integer(Can_Dat_11$hr),
                          Weekday= Can_Dat_11$wday,
-                         KW =as.numeric(Can_Dat_11$KWeek))%>%
-            as.data.table()
+                         KW =as.numeric(Can_Dat_11$KWeek))
 gam_1<- gam(NO2 ~ s(HR, bs= "cr",k=17)+Weekday+s(KW, bs = "ps", k=5),
             data = Can_table, family= "gaussian")
 gam_1 <- getViz(gam_1)
