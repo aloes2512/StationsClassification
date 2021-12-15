@@ -14,22 +14,23 @@ BW_list_tbl<-readRDS(file.path(dat_path,"BW_list_tbl.rds"))
 Can_dat<- BW_list_tbl$Stg_Can%>% subset(datetime< ymd("2021-01-01"))
 ```
 
-## Classification of Immission Measurements 2000 to 2020 in Baden-Wuerttemberg(BW)
+## Classification of Immission Data 2000 to 2020 in Baden-Wuerttemberg(BW)
 ### Periodicity  of recorded data ###
 
-The distribution of immissions depends on  many factors:
+
+The distribution immissions caused by emissions depends on  many factors :
 
  * the time and intensity of operations,
  * the location of the emission sources, 
  * the interaction of the atmospheric components and 
  * the effect of wind speed and direction on the dilution
 
-A summary of state of the art calculation  and simulation methods (Stand der Modellierungstechnik zur Prognose der NO2-Konzentrationen in Luftreinhalteplänen nach der 39. BImSchV) was published by the Umweltbundesamt and is available from [Stand Modellierung UBA](http://www.uba.de/uba-info-medien/4191.html)
+A summary of state of art  methods to determine the effects was published by the German Umweltbundesamt: Stand der Modellierungstechnik zur Prognose der NO2-Konzentrationen in Luftreinhalteplänen nach der 39. BImSchV. The report is available from [Stand Modellierung UBA](http://www.uba.de/uba-info-medien/4191.html)
 
 
-### Location of emission sources
+### Location and characteristic of mayor emission sources
 
-Exhaust gas from motor vehicles is emitted to a large extend along main routes (Autobahn, Bundesstrassen, Hauptstrassen).Statistics show, that about 50% are emitted outside urban area. Fuel burned for heating results in emissions spreads within settled areas. Power plants  are located at a few points in BW. As their chimneys are high the exhaust gas is to some extend diluted when it reaches populated areas. Industrial emissions are mainly some distance off  settled areas.
+Exhaust gas from motor vehicles is emitted  along *main routes (Autobahn, Bundesstrassen, Hauptstrassen)*. About 50% of road traffic exhaust is emitted outside urban areas. Fuel burned for *heating causes emissions* spreads within *settled areas only*. The exhaust gases of *Power plants* and *waste treatment* are generally reduced by  *flu gas scrubbing*. As the exhaust is emitted by high chimneys, the gases  are diluted until they reach populated areas. *Industrial emissions* are mostly off settled areas and treated before entering the atmosphere.
 
 ### Time dependence of emissions
 >
@@ -37,14 +38,18 @@ Exhaust gas from motor vehicles is emitted to a large extend along main routes (
 >
 > * Burning fuel to heat  is  necessary if temperatures are less than 15 C. Automated house-heating-systems are controlled by outside temperature to keep room temperatures at ~ 20 C . Therefore  exhaust emissions are proportional to $(20  - Temp)$
 > * traffic with passenger cars is different at working days and weekends.  
->This can be verified by analyzing the dependence of immissions at selected days of the week or hours of a day or combination of both  
+>This can be verified by analyzing the dependence of immissions at selected days of the week or hours of a day or combination of both   
+>
+> * many industrial emissions are strongly reduced at weekends and holidays
 
 
 ### Windeffects
 
 >If the source of emissions (e.g. a power plant) is located in the  direction of winds, the immissions depend on wind direction.   
 >The windrose measured at the sampling station Reutlingen show sensitivity to emissions from the sector 105° to 135° and 225° to 255°  which are the main wind directions.    
->Strong winds transport emissions over greater distance. The dependence of immission on the wind force and distance can be used to identify   immission sources.    
+>Strong winds transport emissions over greater distance. The dependence of immission on the wind force and distance can be used to identify   immission sources. 
+
+Immissions  downstream a mayor emitter  depend on wind directions. Taking as example a wind rose measured at Reutlingen.The Hospital (Kreisklinikum) is located in a distance of 500m and in the sector 105° to 135° in the main wind direction from  the sampling station. This means that we will expect enhanced effects from emissions of the heating system. Selecting the sector data from the 1-h values  will show the effect of the emission source. 
 
 ![Reutlingen Windrose](figs/Windrose_Rt.png)
 
@@ -54,38 +59,53 @@ In the first part of this publication we did show the long term trends of NO2-im
 
 
 
-With this part we show how the periodic variation **monthly(or calendar week), day of the week, hour of the day**  of emissions are related to immission variation at the sampling stations. This correlations can be used to identify the contributions of the various emissions sources to the measured immissions.
+With this part we show how the periodic variation **monthly(or calendar week), day of the week, hour of the day**  of **emissions** are related to **immission variation** at the sampling stations. This dependencies are used to identify the contributions of the various emissions sources to the measured immissions.
 
-As an example of urban immissions we selected the station an Stuttgart Bad Cannstatt (ID 4452). 
-To get a first impression on the  periodic variations the 1-h-mean-NO2-immissions the 1-values are plotted as black points together with a smoothing function ( red line). This smoothing function is a linear combination of 21 basis functions the parameters calculated using a maximum likelihood method. The plot shows that the immissions are very high during winter time (1 peak every year) and low during the summer month.The smoothing red line however does not show the same number of peaks. The difference will be investigated later
+As an example of urban immissions we selected the station an Stuttgart Bad Cannstatt (ID 4452). A 6 years period that is 52560 1-h mean values are modeled to extract the systematic relations of the co variants.
+
+To get a first impression on the  periodic variations the 1-h-mean-NO2-immissions are plotted (black dots) together with a smoothing function ( red line). This smoothing function (model) is a linear combination of 21 basis functions. The contributions are calculated using a maximum likelihood method.The method is explained in detail (Wood, S.N., N. Pya and B. Saefken (2016), Smoothing parameter and model selection for general smooth models (with discussion). Journal of the American Statistical Association 111, 1548-1575 ). The plot shows that the immissions are very high during winter time (1 peak every year) and low during the summer month.The smoothing red line however does not show the same number of peaks. 
 
 
-![Can_periodicity](figs/NO2_periodicity_00_20.png)
+![Can_periodicity](figs/NO2_periodicity_15_20.png)
  
  
-The 1-h measurements at this station located in a typical urban area at the side of a major road and surrounded by family and  apartment houses.  Local emissions result from burning processes: motor-vehicles, house heating, waste treatment, a power station burning gas  and industrial activities (motor engine test facility): 
- - **fossil fuel burned** 
+The Bad Cannstatt sampling-station is located in a typical urban area at the side of a major road and surrounded by family and  apartment houses.  Local emissions result from the  burning processesof: motor-vehicles, house heating, waste treatment, a power station burning gas  and industrial activities (motor engine test facility).
  
-    > for heating and warming water,     
- - **vehicle exhaust**,  
- - **power plants**,   
- - **waste treatment**  
- - **industrial processes** 
+ 
+## Seasonal variation of NO2 NO O3 in relation to heating demand
+
+
+Modelling the immissions with 21 basis functions for the 6-years-period results in the fitting shown with the next plot:  
+
+- *time dependency of heating demand (Grdz) correlates with NO- and NO2-immission. With maximum values during the heating periods
+and minimum during the summer month
+
+- *O3 concentrations are maximum during summer month and minimum during heating periods
+
+These variations are explained by the law of mass action  (Wikipedia:"https://en.wikipedia.org/wiki/Law_of_mass_action")
+
+![Heating_demand](figs/Period_NO2.NO.O3_Can_15_20.png)
+
+
+
 
 ## Effects of heating on urban immissions
 
-To model the effect of house heating on emissions it is necessary to understand the control of house-heating systems.
-Automated heating shall keep temperatures at living rooms at about  20 C. The energy needed to compensate for the heat loss through walls,  windows, ceiling and ventilation depends on the  outside temperatures (Temp). It is proportional to the temperature difference (Grdz). Hence the emissions from burning fossil fuels are proportional to $Grdz = (20 - Temp)*perc.time$.Heat inside the rooms is dissipated  also from lighting, cooking, machinery, computers, etc. This dissipated heat is for an average 3 family household in the order of 3000 kWh per year. 
-Because of this dissipated  heat the direct heating is only necessary at outside temperatures below 15 C.
+To find out what is causing these annual variations a model for the energy necessary to heat individual houses, department houses, offices and public buildings is used.
+
+Heating shall keep rooms at a constant temperature (at ~ 20 C ) at  outside temperatures below this level. The amount needed is equal to the heat loss through walls, windows,ventilation, etc. The heat needed is supplied by burning fuels locally or by using the excess heat from power stations or  waste treatment. In Germany a high percentage of the heat supply is related to burning processes. Burning causes emissions which are proportional to the quantity of burned fuel and the technology used. Improvements in technologies (e.g. exhaust gas treatment) are generally   dependent on major investments. For periods of one year or less no change of burning efficiency is assumed.
+Heat  is dissipated inside of buildings from lighting, cooking, machinery, computers, etc. Because of this dissipated  heat  direct heating is only necessary at outside temperatures below 15 C.
 
 ```{r Heizg , include=FALSE}
 HeizDaten_Can <-Can_dat%>% filter (Temp < 15) %>%
-  summarise (Gesamt.std =NROW(Can_dat)   ,Hzg.std = n()  ,perc.time = Hzg.std / NROW(Can_dat)*100,
+  summarise (Total_hr =NROW(Can_dat)   ,Heating_hr = n()  ,perc.time = Heating_hr/ NROW(Can_dat)*100,
              Temp.avg  =mean(Temp, na.rm = TRUE),
              Grdz= (20-Temp.avg)*perc.time/100)
 
 ```
 
+
+The percentage of time heating has to be on ( $Temp < 15 C$) was 66% for the 21 year period from 2000 to 2020.
 ```{r, echo=FALSE}
 knitr::kable (HeizDaten_Can,digits =1,align= "c")
 ```
@@ -134,24 +154,27 @@ Can_dat_Yr %>%
         geom_smooth(data=Can_dat_Yr,
               method = "lm",mapping= aes(x =as.numeric(Yr) , y=Hz_energ_bedarf),
               col = "purple", formula = y~ x ,linetype = 2)+
-        ggtitle("Heating-Energy Bad Cannstatt",
-          subtitle = "Year-average_Heating + 
-   20% Water-Heating")+
+        ggtitle("Heating-energy Bad Cannstatt",
+          subtitle = "Year-average-heating + 
+   20% Water-heating")+
   labs(y= "~ Grdz(Jahr)", x = "")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+```{r, echo= FALSE}
+
 ggsave("Hzg_NO2_Can.png",device="png",path="~/projects/StationsClassification/reports/figs")
 ```
+![Year Heating](figs/Hzg_NO2_Can.png)
 
+
+The fig shows as regression line the  general trend to lower heating demands. But with considerable year to year changes.The smoothing line fitting the annual data does not show this variation properly because of a too small number of basis functions.
 
 ## Variations of Temperature, NO2/NO-Immissions as a Function of Month of a Year
 
 
-
+Smoothing the 1-h measurements at a years period 2015 to 2020 with 21 basis functions by a generalized additive model (gam), shows an annual pattern for heat-energy demand NO2- and NO-immissions. Suggesting a model using mean values per calendar-week or month
 ![Periodicity](figs/Hzg_NO2_NO_Can_15_20.png)
-
-The fig shows as regression line the  general trend to lower heating demands. But with considerable year to year changes.The smoothing line fitting the annual data does not show this variation properly because of a too small number of basis functions.
-
-
 
 
 ## Variation per calendar week

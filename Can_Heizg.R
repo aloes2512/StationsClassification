@@ -26,7 +26,8 @@ HeizDaten_Can <-Can_dat%>% filter (Temp < 15) %>%
   summarise (Gesamt_stunden =NROW(Can_dat) ,Hz_stunden = n(),Anteil_Hzg = Hz_stunden / NROW(Can_dat),
              Temp_mittel_Hzg =mean(Temp, na.rm = TRUE),
              Gradzahl_Hzg = (20-Temp_mittel_Hzg)*Anteil_Hzg)
-HeizDaten_Can #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg
+HeizDaten_Can # Can_dat : 21 years 7671 days
+              #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg 21 years
               # 184103          121404       0.659      6.73         8.75
 # Warm Wasser Energ-Bedarf 20% Heizenergie
 WW<- HeizDaten_Can$Gradzahl_Hzg*HeizDaten_Can$Hz_stunden*0.2/HeizDaten_Can$Gesamt_stunden
@@ -89,11 +90,11 @@ Can_detrend.no2<-Can_dat_Heizg%>%mutate(NO2= na.locf(NO2))%>%
            dplyr::select(NO2.resd=.resid, NO2.fit= .fitted) )
 Can_detrend.no2%>% head(2)
 Can_detrend.no2%>% ggplot(aes(x =datetime))+
-  geom_smooth(mapping = aes(y=NO2.resd),method= "gam",formula = y ~ s(x , bs= "cs", k=20),col ="red")+
+  geom_smooth(mapping = aes(y=NO2.resd),method= "gam",formula = y ~ s(x , bs= "cs", k=21),col ="red")+
   geom_line(aes(y= NO2.fit),linetype = 3,col ="red")+
   ggtitle("NO2- trend Bad Cannstatt",
           subtitle= "regression line and mean deviation
-   smoothing with 20 basis function ")
+   smoothing with 21 basis function ")
 ggsave("NO2_trend_resd.png",path=save.figs)
 # Can_NO2_model für Zeitraum 15 bis 20
 Can_NO2_15_20_model <- lm (NO2 ~ datetime +1, data = Can_dat_Heizg_15_20)
