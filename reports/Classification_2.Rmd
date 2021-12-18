@@ -178,3 +178,15 @@ Smoothing the 1-h measurements at a years period 2015 to 2020 with 21 basis func
 
 
 ## Variation per calendar week
+
+
+
+
+## monthly variations of immissions
+
+Smoothed values of NO2 immissions at "Stuttgart Am Neckartor" **increased from 2004 to 2005** with a sharp decrease following, which was interrupted in 2010 followed by a strong decrease. 
+All urban sampling stations recorded a strong reduction of immissions around 2015/2016. Some exceptions may be related to changing local conditions as vehicle speed limits were imposed or emissions increase locally from heavy-duty machinery (construction work for Stuttgart 21). The increased emissions  effected the immissions at the nearby sampling station __Stg. Klettplatz__ and  __Stg. Am Neckartor__.
+
+
+![](./figs/BW_NO2_Immissions_average.png)
+

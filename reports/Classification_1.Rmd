@@ -121,17 +121,17 @@ The table is arranged in ascending order of **mean NO2 immissions measurements**
 ![BW_NO2 trends](./figs/BW_NO2_linear_regression.png)
 
 
-This summary view shows 
--- that the average immissions at the three rural stations stay **below $10 [μg/m^3]$**  
--- at the rural stations the mean values are nearly independent of the time 
--- at a major group of urban background stations the regression lines (20 year mean)  
-   are located higher than $25 [μg/m^3]$ and lower $40 [μg/m^3]$
--- at most of the background stations *rate of reduction is much lower* than with traffic stations     
--- at stations located at main streets (heavy traffic) the reduction of immissions per year is high   
--- 20-year mean values at main streets exceeded limits considered dangerous to human health  
--- at Stuttgart "Am Neckartor" the highest values were recorded     
-   --- starting in 2003 with anual mean greater $125 [μg/m^3]$     
-   --- with long term reductions "Am Neckartor"  reaching  $50 [μg/m^3]$in 2020 
+# Some observations from the trend :
+-- average immissions at the three rural stations stay **below $10 [μg/m^3]$**  
+-- at the rural stations the mean ** $mean  NO_2 $ ** values are  independent of the time 
+-- the regression lines (20 year mean) from stations located in urban background  
+   are in between $25 [μg/m^3]$ and  $40 [μg/m^3]$
+-- at background stations **rate of reduction of ** $mean  NO_2 $ ** is low** compared  with traffic stations     
+-- at main streets (heavy traffic) the **reduction per year** of $mean  NO_2 $ is high   
+-- 20-year $mean  NO_2 $ exceeded **limits considered dangerous** to human health **close to main streets**
+-- at Stuttgart "Am Neckartor" the highest $mean  NO_2 $ were recorded     
+   --- starting in 2003 with annual mean greater $125 [μg/m^3]$ which were reduced to $50 [μg/m^3]$in 2020    
+   --- long trend "Am Neckartor"  indicates levels smaller $40 [μg/m^3]$
 -- at some stations the *rate of reduction (chg_py)* is  higher than at the station "Am Neckartor"
 
 
@@ -150,17 +150,72 @@ kable(NO2_chg.py,digits =1)
 
 ```
 
-The  mean yearly reductions ranges from $-5.1[μg/(m^3*y)]$ at the "Hauptstätter Strasse" and no change at all $0 [μg/(m^3*y)]$ at the sampling station "Schwarzwald-Süd"
+The  mean yearly reductions ranges from $-5.1[μg/(m^3*y)]$ at the "Hauptstätter Strasse" and no change at all $0 [μg/(m^3*y)]$ at the rural background  station "Schwarzwald-Süd".
 
 
-## monthly variations of immissions
+```{r, echo=FALSE}
+dat_path<- "~/documents/Luftqualitaet/Daten/BW_Rdat"
+load(file.path(dat_path,"BW.RData"))
+summary(BW.all_data)
+Can_data<-BW.all_data$Stg.Can$Stg.Can.no2 %>% left_join(BW.all_data$Stg.Can$Stg.Can.no)
+Can_data<-Can_data%>% left_join(BW.all_data$Stg.Can$Stg.Can.temp)
+Can_data<-Can_data%>%left_join(BW.all_data$Stg.Can$Stg.Can.o3)
+Can_data_list<-BW.all_data$Stg.Can
+Can_comps<-names(BW.all_data$Stg.Can)
+length(Can_comps) #8
+Can_tbl<- BW.all_data$Stg.Can$Stg.Can.no2%>% dplyr::select(-NO2)
+for (i  in 1:8) {
+  df <- BW.all_data$Stg.Can[[i]]
+  Can_tbl <- left_join(Can_tbl,df, by=c("station", "datetime"))
+}
+Can_tbl<-Can_tbl%>% mutate(Hzg = as_factor(ifelse(Temp<= 15,"heating", "no_heating")))
+comps <- names(Can_tbl)%>%setdiff(c("station","datetime","Hzg"))
+Can_tidy<- Can_tbl%>% pivot_longer(cols = all_of(comps),names_to = "comp",values_to =   "value" )
+# Plot
+Can_tidy %>% na.omit()%>% filter(comp!= "WR"& comp != "WG"& comp != "CO"& comp != "SO2") %>%
+  ggplot(aes(x = datetime))+
+  geom_smooth(method = "lm",mapping = aes(y= value,col= comp))+
+  facet_grid(.~Hzg)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle(" 21-Year-Trend(regression)
+NO, NO2, O3, Temperature",
+          subtitle = "Heating hours Stgt.-Bad Cannstatt")+
+  labs(x= "", y = "Values(μg/m3,m/s,°C)")
+```
+## Effect of Heating on $NO_2, NO, O_3
 
-Smoothed values of NO2 immissions at "Stuttgart Am Neckartor" **increased from 2004 to 2005** with a sharp decrease following, which was interrupted in 2010 followed by a strong decrease. 
-All urban sampling stations recorded a strong reduction of immissions around 2015/2016. Some exceptions may be related to changing local conditions as vehicle speed limits were imposed or emissions increase locally from heavy-duty machinery (construction work for Stuttgart 21). The increased emissions  effected the immissions at the nearby sampling station __Stg. Klettplatz__ and  __Stg. Am Neckartor__.
+![](./figs/Trend_NO2.NO.O3.Tem_Can.png)
 
 
-![](./figs/BW_NO2_Immissions_average.png)
-
+```{r}
+dat_path<- "~/documents/Luftqualitaet/Daten/BW_Rdat"
+load(file.path(dat_path,"BW.RData"))
+summary(BW.all_data)
+Can_data<-BW.all_data$Stg.Can$Stg.Can.no2 %>% left_join(BW.all_data$Stg.Can$Stg.Can.no)
+Can_data<-Can_data%>% left_join(BW.all_data$Stg.Can$Stg.Can.temp)
+Can_data<-Can_data%>%left_join(BW.all_data$Stg.Can$Stg.Can.o3)
+Can_data_list<-BW.all_data$Stg.Can
+Can_comps<-names(BW.all_data$Stg.Can)
+length(Can_comps) #8
+Can_tbl<- BW.all_data$Stg.Can$Stg.Can.no2%>% dplyr::select(-NO2)
+for (i  in 1:8) {
+  df <- BW.all_data$Stg.Can[[i]]
+  Can_tbl <- left_join(Can_tbl,df, by=c("station", "datetime"))
+}
+Can_tbl<-Can_tbl%>% mutate(Hzg = as_factor(ifelse(Temp<= 15,"heating", "no_heating")))
+comps <- names(Can_tbl)%>%setdiff(c("station","datetime","Hzg"))
+Can_tidy<- Can_tbl%>% pivot_longer(cols = all_of(comps),names_to = "comp",values_to =   "value" )
+# Plot
+Can_tidy %>% na.omit()%>% filter(comp!= "WR"& comp != "WG"& comp != "CO"& comp != "SO2") %>%
+  ggplot(aes(x = datetime))+
+  geom_smooth(method = "lm",mapping = aes(y= value,col= comp))+
+  facet_grid(.~Hzg)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle(" 21-Year-Trend(regression)
+NO, NO2, O3, Temperature",
+          subtitle = "Heating hours Stgt.-Bad Cannstatt")+
+  labs(x= "", y = "Values(μg/m3,m/s,°C)")
+```
 
 ## Comparison  with emission data
 

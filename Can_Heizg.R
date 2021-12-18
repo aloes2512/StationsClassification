@@ -5,6 +5,8 @@ library(xts)
 library(mgcv)
 library(mgcViz)
 library(broom)
+library(knitr)
+library(modelr)
 # Data path
 dat_path = "/Users/alfloeffler/Documents/Luftqualitaet/Daten/BW_Rdat"
 save.figs <- paste0("~/projects/StationsClassification","/reports/figs")
@@ -18,9 +20,6 @@ names(BW_list_tbl)
 Can_dat%>% head()
 Can_dat<-Can_dat%>% subset(datetime< ymd("2021-01-01"))
 
-# group by hour
-##Can_dat<-Can_dat%>% mutate(datehour = format(datetime,"%H" ),Temp= na.locf(Temp),NO2= na.locf(NO2))
-##mean(Can_dat$Temp,na.rm = TRUE)# 11.29371
 # Heizdaten aus Gradzahlen
 HeizDaten_Can <-Can_dat%>% filter (Temp < 15) %>%
   summarise (Gesamt_stunden =NROW(Can_dat) ,Hz_stunden = n(),Anteil_Hzg = Hz_stunden / NROW(Can_dat),
@@ -30,8 +29,8 @@ HeizDaten_Can # Can_dat : 21 years 7671 days
               #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg 21 years
               # 184103          121404       0.659      6.73         8.75
 # Warm Wasser Energ-Bedarf 20% Heizenergie
-WW<- HeizDaten_Can$Gradzahl_Hzg*HeizDaten_Can$Hz_stunden*0.2/HeizDaten_Can$Gesamt_stunden
-
+WW<- HeizDaten_Can$Gradzahl_Hzg*HeizDaten_Can$Hz_stunden*0.2/HeizDaten_Can$Gesamt_stunden# 1.154
+# Yearly averages
 Can_dat<- Can_dat %>% 
   mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr = as_factor(Yr))
 Can_dat_Yr <-Can_dat%>% subset(datetime< ymd("2021-01-01"))%>%
@@ -46,10 +45,10 @@ Can_dat_Yr%>% tail()
 Can_dat_Yr %>% 
   subset(datetime <= ymd("2020-12-31"))%>%
   ggplot(aes(x = Yr, y=Hz_energ_bedarf))+
-        geom_point(col = "red")+
+        geom_point(col = "blue")+
         geom_smooth(data=Can_dat_Yr,
              method = "gam",mapping= aes(x =as.numeric(Yr) , y=Hz_energ_bedarf),
-             col = "red", formula = y~ s(x, k = 20) )+
+             col = "blue", formula = y~ s(x, k = 20) )+
   geom_smooth(data=Can_dat_Yr,
               method = "lm",mapping= aes(x =as.numeric(Yr) , y=Hz_energ_bedarf),
               col = "purple", formula = y~ x ,linetype = 2)+
@@ -69,20 +68,61 @@ PrzHzg <- Can_Heizg_00_20 %>%
 # pauschale Berücksichtigung WW Erwärmung ~ 20% Heizwärme
 WW_bedarf <- PrzHzg["Hzg_mittel"]*PrzHzg["Hzzeit"] * 0.2/Gesstd # 1.17 Grad
 Can_dat_Heizg <-Can_dat %>% mutate (Grdz= ifelse(Temp <=15,20-Temp,0),Grdz_gesamt = Grdz+as.numeric(WW_bedarf))
-Can_dat_Heizg<-Can_dat_Heizg%>% na.omit()  
-Can_dat_Heizg%>%  ggplot(aes(x = datetime))+
-  geom_smooth(method="gam",mapping = aes(y = Grdz_gesamt),col = "red", formula = y ~ s(x, k= 20),data=Can_dat_Heizg)+
+Can_dat_Heizg<-Can_dat_Heizg %>% na.omit()  
+summary(Can_dat_Heizg)
+Can_dat_Heizg %>% ggplot(aes(x = datetime))+
+  geom_smooth(method="gam",mapping = aes(y = Grdz_gesamt),col = "blue", formula = y ~ s(x, k= 21),data=Can_dat_Heizg)+
   geom_smooth(method = "lm", mapping = aes(x =datetime,y= Grdz_gesamt),col = "purple", linetype =2, data=Can_dat_Heizg)+
-  ggtitle("House Energy Bad Cannstatt",
-          subtitle = "1-h-Heating + WW-Heating
-  smoothing with 20 basis functions")+
-  labs(x ="", y = "Gradzahl")
-# Select smaller time intervall
+  ggtitle("Energy-demand Bad Cannstatt",
+          subtitle = "Room-Heating + Water-Heating
+  smoothing with 21 basis functions")+
+  labs(x ="", y = " ~ Gradzahl")
+# Select smaller time interval
 Can_dat_Heizg_15_20 <- Can_dat_Heizg %>% subset(datetime>=ymd("2015-01-01")&datetime <= ymd("2020-12-31"))
 summary(Can_dat_Heizg_15_20)
-
+Can_dat_Heizg_15_20 %>% ggplot(aes(x = datetime))+
+  geom_smooth(method="gam",mapping = aes(y = Grdz_gesamt),col = "blue", formula = y ~ s(x, k= 21),data=Can_dat_Heizg_15_20)+
+  geom_smooth(method = "lm", mapping = aes(x =datetime,y= Grdz_gesamt),col = "purple", linetype =2, data=Can_dat_Heizg_15_20)+
+  ggtitle("Energy-demand Bad Cannstatt",
+          subtitle = "Room-Heating + Water-Heating
+  smoothing with 21 basis functions")+
+  labs(x ="", y = " ~ Gradzahl")
 #===========================
 # 
+# create tidy tibble 4 atmospheric components
+Can_val_00_20<-Can_Heizg_00_20%>%na.omit()%>% pivot_longer(cols = -c(1,2,3,9),names_to = "Comp",values_to = "values")%>%
+  mutate(Comp = as_factor(Comp))
+Cmps<- levels(Can_val_00_20$Comp)%>% setdiff(c("Temp","WG")) #"NO2"  "O3"   "NO"   "Grdz"
+summary(Can_val_00_20)
+# components linear trend
+dat_path<- "~/documents/Luftqualitaet/Daten/BW_Rdat"
+load(file.path(dat_path,"BW.RData"))
+summary(BW.all_data)
+Can_data<-BW.all_data$Stg.Can$Stg.Can.no2 %>% left_join(BW.all_data$Stg.Can$Stg.Can.no)
+Can_data<-Can_data%>% left_join(BW.all_data$Stg.Can$Stg.Can.temp)
+Can_data<-Can_data%>%left_join(BW.all_data$Stg.Can$Stg.Can.o3)
+Can_data_list<-BW.all_data$Stg.Can
+Can_comps<-names(BW.all_data$Stg.Can)
+length(Can_comps) #8
+Can_tbl<- BW.all_data$Stg.Can$Stg.Can.no2%>% dplyr::select(-NO2)
+for (i  in 1:8) {
+  df <- BW.all_data$Stg.Can[[i]]
+  Can_tbl <- left_join(Can_tbl,df, by=c("station", "datetime"))
+}
+Can_tbl<-Can_tbl%>% mutate(Hzg = as_factor(ifelse(Temp<= 15,"heating", "no_heating")))
+comps <- names(Can_tbl)%>%setdiff(c("station","datetime","Hzg"))
+Can_tidy<- Can_tbl%>% pivot_longer(cols = all_of(comps),names_to = "comp",values_to =   "value" )
+# Plot
+Can_tidy %>% na.omit()%>% filter(comp!= "WR"& comp != "WG"& comp != "CO"& comp != "SO2") %>%
+  ggplot(aes(x = datetime))+
+  geom_smooth(method = "lm",mapping = aes(y= value,col= comp))+
+  facet_grid(.~Hzg)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle(" 21-Year-Trend(regression)
+NO, NO2, O3, Temperature",
+          subtitle = "Heating hours Stgt.-Bad Cannstatt")+
+  labs(x= "", y = "Values(μg/m3,m/s,°C)")
+ggsave("Trend_NO2.NO.O3.Tem_Can.png",path = save.figs)
 # detrend using residuals
 Can_detrend.no2<-Can_dat_Heizg%>%mutate(NO2= na.locf(NO2))%>%
   mutate(lm(NO2 ~ datetime,data=.)%>% 
