@@ -232,7 +232,7 @@ Within 21 years (183960 hours) about one third ~ 60000 hours no heating was nece
 ## Comparison  with emission data
 
 
-![](~/documents/Luftqualitaet/Analysen/Abbldg/Emissionen/Emissionen_Trend_BRD.png)
+![](./figs/Emissionen_Trend_BRD.png)
 
 The graph shows the emissions reported to or calculated by the German Umweltbundesamt (UBA). The regression lines the average reduction of total emissions and the contribution of transport and road transport. The main reason for the reduction of transport emissions were improvements were progress with combustion engines and intensive treatment of exhaust gases at power plants and industry. the latter took place mainly 2000 to 2005.
 
