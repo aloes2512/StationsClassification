@@ -6,7 +6,6 @@ library(mgcv)
 library(mgcViz)
 library(broom)
 library(knitr)
-library(modelr)
 # Data path
 dat_path = "/Users/alfloeffler/Documents/Luftqualitaet/Daten/BW_Rdat"
 save.figs <- paste0("~/projects/StationsClassification","/reports/figs")
@@ -15,42 +14,43 @@ BW_list_tbl<-readRDS(file.path(dat_path,"BW_list_tbl.rds"))
 summary(BW_list_tbl$Stg_Can)
 #===========================
 # Can as example
-Can_dat<- BW_list_tbl[[13]]
 names(BW_list_tbl)
-Can_dat%>% head()
-Can_dat<-Can_dat%>% subset(datetime< ymd("2021-01-01"))
+
+Can_dat<-BW_list_tbl[[13]]%>% subset(datetime< ymd("2021-01-01"))
 
 # Heizdaten aus Gradzahlen
-HeizDaten_Can <-Can_dat%>% filter (Temp < 15) %>%
+HeizDaten_Can <-Can_dat%>% filter (Temp <= 15) %>%
   summarise (Gesamt_stunden =NROW(Can_dat) ,Hz_stunden = n(),Anteil_Hzg = Hz_stunden / NROW(Can_dat),
              Temp_mittel_Hzg =mean(Temp, na.rm = TRUE),
-             Gradzahl_Hzg = (20-Temp_mittel_Hzg)*Anteil_Hzg)
+             Gradzahl_Hzg = (20-Temp_mittel_Hzg)*Anteil_Hzg,
+             WW = Gradzahl_Hzg*Hz_stunden*0.2/Gesamt_stunden)# Warm Wasser Energ-Bedarf 20% Heizenergie
 HeizDaten_Can # Can_dat : 21 years 7671 days
-              #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg 21 years
-              # 184103          121404       0.659      6.73         8.75
-# Warm Wasser Energ-Bedarf 20% Heizenergie
-WW<- HeizDaten_Can$Gradzahl_Hzg*HeizDaten_Can$Hz_stunden*0.2/HeizDaten_Can$Gesamt_stunden# 1.154
+              #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg WW 
+              # 184103          121404       0.659      6.73         8.75        1.16
+
 # Yearly averages
 Can_dat<- Can_dat %>% 
-  mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr = as_factor(Yr))
-Can_dat_Yr <-Can_dat%>% subset(datetime< ymd("2021-01-01"))%>%
+          mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr = as_factor(Yr),
+                 Hzg = ifelse(15-Temp>=0,TRUE,FALSE),
+                Grdz_Hzg = ifelse(Hzg,20-Temp,0))
+ 
+Can_dat_Yr<-  Can_dat %>%  dplyr::select(-datetime)%>%
   group_by(Yr) %>% summarise (station=first(name),
-                                                      datetime = first(datetime), 
-                                                      T_Jahr_mittel= mean(Temp,na.rm= TRUE),
-                                                      NO2_Jahr_mittel= mean(NO2,na.rm=TRUE),
-                                                      Hz_energ_bedarf= (20-T_Jahr_mittel)*1.20)
-Can_dat_Yr$Hz_energ_bedarf%>% mean()# 10.4
+                              T_Jahr_mittel= mean(Temp,na.rm= TRUE),
+                              NO2_Jahr_mittel= mean(NO2,na.rm=TRUE),
+                              Grdz_Jahr_mittel = mean(Grdz_Hzg,na.rm = TRUE)*1.2,
+                              Hz_std= sum(Hzg,na.rm = TRUE),
+                              Hz_proz= Hz_std/n())
 Can_dat_Yr%>% summary()
-Can_dat_Yr%>% tail()
+
 Can_dat_Yr %>% 
-  subset(datetime <= ymd("2020-12-31"))%>%
-  ggplot(aes(x = Yr, y=Hz_energ_bedarf))+
+  ggplot(aes(x = Yr, y=Grdz_Jahr_mittel))+
         geom_point(col = "blue")+
         geom_smooth(data=Can_dat_Yr,
-             method = "gam",mapping= aes(x =as.numeric(Yr) , y=Hz_energ_bedarf),
+             method = "gam",mapping= aes(x =as.numeric(Yr) , y=Grdz_Jahr_mittel),
              col = "blue", formula = y~ s(x, k = 20) )+
   geom_smooth(data=Can_dat_Yr,
-              method = "lm",mapping= aes(x =as.numeric(Yr) , y=Hz_energ_bedarf),
+              method = "lm",mapping= aes(x =as.numeric(Yr) , y=Grdz_Jahr_mittel),
               col = "purple", formula = y~ x ,linetype = 2)+
         ggtitle("Heating-Energy Bad Cannstatt",
           subtitle = "Year average Heating + 
@@ -58,13 +58,18 @@ Can_dat_Yr %>%
   labs(y= "~ Grdz(Jahr)", x = "")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 #  Alternative Berechnung aus 1-h Werten
-Can_Heizg<- Can_dat%>% mutate(Grdz = ifelse(Temp <=15,20-Temp,0),Hzstd = ifelse(Grdz>0,TRUE,FALSE))
-Can_Heizg_00_20<- Can_Heizg%>% subset(datetime < ymd("2020-12-31"))
-Gesstd<- NROW(Can_Heizg_00_20)
-Can_Heizg_00_20%>% na.omit()%>%summary()
-PrzHzg <- Can_Heizg_00_20 %>% 
-  summarise (Hzzeit = sum(Grdz>0,na.rm = TRUE),Hzg_mittel = mean(Grdz, na.rm=TRUE),
-             Ges_zeit = NROW(.),prozHzstd = Hzzeit/Ges_zeit*100)
+Can_dat%>% head()
+summary(Can_dat)
+Can_Heizg_00_20<- Can_dat%>% na.omit()
+Can_Heizg_00_20%>%summary()
+Gesstd<- NROW(Can_Heizg_00_20)#170846
+
+PrzHzg <- Can_Heizg_00_20 %>%         #Hzzeit Hzg_mittel Ges_zeit prozHzstd
+                                      #112844       8.74   170846      66.1
+  summarise (Hzzeit = sum(Grdz_Hzg>0,na.rm = TRUE),
+             Hzg_mittel = mean(Grdz_Hzg, na.rm=TRUE),
+             Ges_zeit = NROW(.),
+             prozHzstd = Hzzeit/Ges_zeit*100)
 # pauschale Berücksichtigung WW Erwärmung ~ 20% Heizwärme
 WW_bedarf <- PrzHzg["Hzg_mittel"]*PrzHzg["Hzzeit"] * 0.2/Gesstd # 1.17 Grad
 Can_dat_Heizg <-Can_dat %>% mutate (Grdz= ifelse(Temp <=15,20-Temp,0),Grdz_gesamt = Grdz+as.numeric(WW_bedarf))
@@ -76,17 +81,24 @@ Can_dat_Heizg %>% ggplot(aes(x = datetime))+
   ggtitle("Energy-demand Bad Cannstatt",
           subtitle = "Room-Heating + Water-Heating
   smoothing with 21 basis functions")+
-  labs(x ="", y = " ~ Gradzahl")
+  labs(x ="", y = " ~ Gradzahl")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 # Select smaller time interval
 Can_dat_Heizg_15_20 <- Can_dat_Heizg %>% subset(datetime>=ymd("2015-01-01")&datetime <= ymd("2020-12-31"))
 summary(Can_dat_Heizg_15_20)
+Can_grdz.yr<-Can_dat_Heizg_15_20%>% group_by(Yr)%>% 
+  summarise(Grdz_yr= mean(Grdz_gesamt))
+Can_grdz.yr$Jahr<-seq(from= ymd("2015-07-01"),to = ymd("2020-07-01"),by = "1 year")%>% as.POSIXct()
 Can_dat_Heizg_15_20 %>% ggplot(aes(x = datetime))+
   geom_smooth(method="gam",mapping = aes(y = Grdz_gesamt),col = "blue", formula = y ~ s(x, k= 21),data=Can_dat_Heizg_15_20)+
   geom_smooth(method = "lm", mapping = aes(x =datetime,y= Grdz_gesamt),col = "purple", linetype =2, data=Can_dat_Heizg_15_20)+
+  geom_point(mapping= aes(x=Jahr,y= Grdz_yr),data=Can_grdz.yr)+
   ggtitle("Energy-demand Bad Cannstatt",
           subtitle = "Room-Heating + Water-Heating
   smoothing with 21 basis functions")+
   labs(x ="", y = " ~ Gradzahl")
+ggsave("Can_energy_15_20.png",path = save.figs)
+
 #===========================
 # 
 # create tidy tibble 4 atmospheric components
@@ -199,4 +211,25 @@ plot(sm(NO2_dat_gam,3))+ ggtitle("Bad Cannstatt:  effect of smoothed Temperature
   l_fitLine(col = "red")+
   l_ciLine(col = "blue")+
   l_points(size = 0.01)
+# Heating effects
+Can_dat_Heizg %>% head(2)# from line 21
+range(Can_dat_Heizg$Grdz_Hzg)# 0  to 35.1
+Can_dat_Heizg<-Can_dat_Heizg%>% na.omit%>%
+  mutate(Hzg_lvl=round(3*Grdz_Hzg/max(Grdz_Hzg))%>% as_factor() )
+levels(Can_dat_Heizg$Hzg_lvl)<-c("no.ht","low.ht","medium.ht","max.ht")
+summary(Can_dat_Heizg)
+Hzg_mass <-Can_dat_Heizg %>% group_by(Hzg_lvl)%>%
+  summarise(N= n())
+Hzg_mass%>% ggplot(aes(x= Hzg_lvl, y= N))+ 
+  geom_histogram(stat = "identity", col = 2)+
+  ggtitle("Distribution of Heating Hours
+Bad Canstatt 21 years (183960 hours)",
+          subtitle = " 4 levels: no-, low-, medium-, maximum-heating ")+
+  labs(x="",y= "heating hours")
+ggsave("Distrib_heatg_h_Can.png",path=save.figs)
+Can_dat_Heizg%>% ggplot(aes(x= Grdz_Hzg))+
+  geom_histogram(bins =30,col = "grey")
+x<- with(Can_dat_Heizg,Grdz_Hzg)
+hist(x,col = "grey", main = "Heating-Hours-Distribution
+     Bad Cannstatt",freq= T,xlab= " Gradzahl", breaks= seq(0,36,1),right = F)
 

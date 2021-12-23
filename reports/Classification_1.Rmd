@@ -217,6 +217,18 @@ NO, NO2, O3, Temperature",
   labs(x= "", y = "Values(μg/m3,m/s,°C)")
 ```
 
+
+## distribution of heating hours
+To visualize the effect of energy burned to heat individual homes, offices and public buildings the demand of heating expressed by the temperature difference $Grdz =  20- Temp  [°C]$ Room temperature an outside Temperature is classified into 4 groups: 
+-  no heating necessary $no.ht$  
+-  low heating $low.ht$   
+-  medium heating $medium.ht$
+-  maximum heating $max.ht$ 
+
+Within 21 years (183960 hours) about one third ~ 60000 hours no heating was necessary, low energy consumption was necessary at about 80000 hours, medium with ~ 20000 hours and maximum only for a very small number of hours.
+![](./figs/Distrib_heatg_h_Can.png)
+
+
 ## Comparison  with emission data
 
 
