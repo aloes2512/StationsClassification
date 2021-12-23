@@ -32,3 +32,4 @@ vignettes/*.pdf
 .Rproj/user
 BW_statistic.rds
 Stationsdaten.csv
+Stationsdaten.RData
