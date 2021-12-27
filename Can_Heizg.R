@@ -260,3 +260,15 @@ NO2_3stn_sel%>% ggplot(aes(x= datetime,col= name))+
           subtitle= "Schwarzwald Süd, Stg. Bad- Cannstatt, Luwigsburg Friedrichstr.")+
   labs(x= "",y= "NO2 [μg/m3]")
 ggsave("NO2_Trend_exampl.png",path=save.figs)
+# Heating effect
+NO2_3stn_sel%>% head(1)
+NO2_3stn_heatg<-NO2_3stn_sel%>% mutate(heatg= ifelse(Temp<=15,NO2,0))%>% na.omit()
+NO2_3stn_heatg%>% ggplot(aes(x= datetime,col= name))+
+  geom_smooth(method ="lm", mapping = aes(y= NO2), data= NO2_3stn_heatg, linetype = 1)+
+  geom_smooth(method ="lm", mapping = aes(y= NO2-heatg), data= NO2_3stn_heatg, linetype = 2)+
+  geom_smooth(method ="lm", mapping = aes(y= heatg), data= NO2_3stn_heatg, linetype = 3)+
+  facet_wrap(.~ name,scales= "free_x")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle( "NO2-Immission-Trend",
+           subtitle= "Schwarzwald Süd, Stg. Bad- Cannstatt, Luwigsburg Friedrichstr.")+
+  labs(x= "",y= "NO2 [μg/m3]")
