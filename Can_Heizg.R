@@ -13,8 +13,9 @@ list.files(dat_path)
 BW_list_tbl<-readRDS(file.path(dat_path,"BW_list_tbl.rds"))
 summary(BW_list_tbl$Stg_Can)
 #===========================
+
 # Can as example
-names(BW_list_tbl)
+names(BW_list_tbl)# 22 stations
 
 Can_dat<-BW_list_tbl[[13]]%>% subset(datetime< ymd("2021-01-01"))
 
@@ -28,6 +29,17 @@ HeizDaten_Can # Can_dat : 21 years 7671 days
               #Gesamt_stunden Hz_stunden Anteil_Hzg Temp_mittel_Hzg Gradzahl_Hzg WW 
               # 184103          121404       0.659      6.73         8.75        1.16
 
+Heiz_kenndat<- function(df) {
+                   x<- df%>%  subset(Temp != is.na(Temp))%>%
+                          group_by(name)%>% 
+                               summarise(
+                                op.hrs =NROW(.),
+                                Temp.ht.mean=mean(Temp,na.rm= TRUE),
+                                grdz.ht = mean(ifelse(Temp<= 15,20-Temp,0),na.rm= TRUE),
+                                ht.hrs = sum(ifelse (Temp<= 15, TRUE,FALSE )))
+}
+
+(Heiz_kenndat(Can_dat))
 # Yearly averages
 Can_dat<- Can_dat %>% 
           mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr = as_factor(Yr),
@@ -232,4 +244,19 @@ Can_dat_Heizg%>% ggplot(aes(x= Grdz_Hzg))+
 x<- with(Can_dat_Heizg,Grdz_Hzg)
 hist(x,col = "grey", main = "Heating-Hours-Distribution
      Bad Cannstatt",freq= T,xlab= " Gradzahl", breaks= seq(0,36,1),right = F)
-
+# Plot additional stations
+NO2_3stn_sel<-BW_list_tbl%>% map_df(~.x)%>% 
+  subset(name %in% c("Sws","Stuttgart-Bad Cannstatt","Lbg_Friedr"))%>%
+  dplyr::select(1:5)%>% subset(datetime< ymd("2021-01-01"))
+NO2_3stn_sel<-NO2_3stn_sel%>% mutate(name= as_factor(name))
+(Heiz_kenndat(NO2_3stn_sel%>%subset(name== "Stuttgart-Bad Cannstatt")))
+# rename for better plotting
+levels(NO2_3stn_sel$name)<- list("Lbg_Friedr"="Lbg_Friedr","Bad-Cannstatt"="Stuttgart-Bad Cannstatt","Schw.Sued"="Sws")
+NO2_3stn_sel%>% ggplot(aes(x= datetime,col= name))+
+  geom_smooth(method ="lm", mapping = aes(y= NO2), data= NO2_3stn_sel)+
+  facet_wrap(.~ name,scales= "free_x")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle( "NO2-Immission-Trend",
+          subtitle= "Schwarzwald Süd, Stg. Bad- Cannstatt, Luwigsburg Friedrichstr.")+
+  labs(x= "",y= "NO2 [μg/m3]")
+ggsave("NO2_Trend_exampl.png",path=save.figs)
