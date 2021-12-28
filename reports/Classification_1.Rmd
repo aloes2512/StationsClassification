@@ -195,6 +195,29 @@ NO, NO2, O3, Temperature",
 ```
 ## Effect of Heating on $NO_2, NO, O_3
 
+In Germany at temperatures lower than 15 C no heating is necessary.
+Comparing the linear regression  at hours with no heating(red line) to hours with heating(green line). The plot of the data measured at Bad Cannstatt shows that about $10 [μg/m^3]$ of immissions are caused by burning fuels to keep rooms at temperature.  
+
+![](./figs/room.ht_NO2_Can.png)
+
+
+Heating does have an annual periodicity which can be filtered and visualized with 21 gaussian smoothing functions with the aid of  gam- smoothing. An algorithm first published by S. Wood (Wood, S.N. (2003) Thin plate regression splines. J.R.Statist.Soc.B 65(1):95-114) and implemented in R (https://www.rdocumentation.org/packages/mgcv/versions/1.8-38/topics/gam)
+The implementation in R is based on Markofchains and a Monte Carlo method (mgcv).
+```{r,referencedoc}
+url_wood<- "https://www.rdocumentation.org/packages/mgcv/versions/1.8-38/topics/gam"
+browseURL(url_wood)
+
+```
+
+Filtering a years period of the NO2-1-h data sampled at Bad Cannstatt () 2015 to 2020 from data previously used) shows the regular periodicity of the energy needed for room heating. With a mean of about $10 [μg/m^3]$ as already found by regression analysis.
+
+
+![](./figs/Can_energy_15_20.png)
+
+Comparing the trends of NO immissions and O3 concentrations from 2000 to 2021 shows, that O3 concentrations are three times higher at times with no heating compared to heating hours and NO immission are close to zero at  temperatures greater 15 C (no heating)
+
+
+## Interaction of atmospheric components
 ![](./figs/Trend_NO2.NO.O3.Tem_Can.png)
 
 
