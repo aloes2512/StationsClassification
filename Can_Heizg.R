@@ -18,7 +18,7 @@ summary(BW_list_tbl$Stg_Can)
 names(BW_list_tbl)# 22 stations
 
 Can_dat<-BW_list_tbl[[13]]%>% subset(datetime< ymd("2021-01-01"))
-
+summary(Can_dat)
 # Heizdaten aus Gradzahlen
 HeizDaten_Can <-Can_dat%>% filter (Temp <= 15) %>%
   summarise (Gesamt_stunden =NROW(Can_dat) ,Hz_stunden = n(),Anteil_Hzg = Hz_stunden / NROW(Can_dat),
@@ -95,6 +95,14 @@ Can_dat_Heizg %>% ggplot(aes(x = datetime))+
   smoothing with 21 basis functions")+
   labs(x ="", y = " ~ Gradzahl")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# effect of room heating
+Can_dat_Heizg%>% ggplot(aes(x= datetime))+
+  geom_smooth(method= "lm", mapping = aes( y= NO2, col = Hzg))+
+  geom_smooth(method= "lm", mapping = aes( y= NO2), col = "black")+
+  ggtitle("NO2-Immission @ ‚Stg.-Bad-Cannstatt",
+          subtitle = "Heating-hours(Hzg) ~ TRUE /FALSE" )+
+  labs(x= "", y= "NO2 [μg/m3]")
+ggsave("room.ht_NO2_Can.png",path = save.figs)
 # Select smaller time interval
 Can_dat_Heizg_15_20 <- Can_dat_Heizg %>% subset(datetime>=ymd("2015-01-01")&datetime <= ymd("2020-12-31"))
 summary(Can_dat_Heizg_15_20)
