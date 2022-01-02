@@ -107,6 +107,17 @@ Can_dat_Heizg %>% ggplot(aes(x = datetime))+
   smoothing with 21 basis functions")+
   labs(x ="", y = " ~ Gradzahl")+
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+## effect of room heating
+Can_dat_Heizg %>% ggplot(aes(x = datetime))+
+  geom_smooth(method="gam",mapping = aes(y = NO2,col = Hzg), formula = y ~ s(x, k= 21),data=Can_dat_Heizg)+
+  geom_smooth(method = "lm", mapping = aes(x =datetime,y= NO2),col = "purple", linetype =2, data=Can_dat_Heizg)+
+  ggtitle("NO2 Immission Bad Cannstatt",
+          subtitle = "Effect of Heating
+  smoothing with 21 basis functions")+
+  labs(x ="", y = " NO2")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ggsave("room_ht_NO2_Can.png",path = save.figs)
+
 # effect of room heating
 Can_dat_Heizg%>% ggplot(aes(x= datetime))+
   geom_smooth(method= "lm", mapping = aes( y= NO2, col = Hzg))+
@@ -114,10 +125,20 @@ Can_dat_Heizg%>% ggplot(aes(x= datetime))+
   ggtitle("NO2-Immission @ ‚Stg.-Bad-Cannstatt",
           subtitle = "Heating-hours(Hzg) ~ TRUE /FALSE" )+
   labs(x= "", y= "NO2 [μg/m3]")
-ggsave("room.ht_NO2_Can.png",path = save.figs)
+ggsave("regr.room_ht_NO2_Can.png",path = save.figs)
 # Select smaller time interval
 Can_dat_Heizg_15_20 <- Can_dat_Heizg %>% subset(datetime>=ymd("2015-01-01")&datetime <= ymd("2020-12-31"))
 summary(Can_dat_Heizg_15_20)
+Can_dat_Heizg_15_20  %>% ggplot(aes(x = datetime))+
+  geom_smooth(method="gam",mapping = aes(y = NO2,col = Hzg), formula = y ~ s(x, k= 21),data=Can_dat_Heizg_15_20)+
+  geom_smooth(method = "lm", mapping = aes(x =datetime,y= NO2),col = "purple", linetype =2, data=Can_dat_Heizg_15_20)+
+  ggtitle("NO2 Immission Bad Cannstatt",
+          subtitle = "Effect of Heating
+  smoothing with 21 basis functions")+
+  labs(x ="", y = " NO2")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
 Can_grdz.yr<-Can_dat_Heizg_15_20%>% group_by(Yr)%>% 
   summarise(Grdz_yr= mean(Grdz_gesamt))
 Can_grdz.yr$Jahr<-seq(from= ymd("2015-07-01"),to = ymd("2020-07-01"),by = "1 year")%>% as.POSIXct()
@@ -125,8 +146,8 @@ Can_dat_Heizg_15_20 %>% ggplot(aes(x = datetime))+
   geom_smooth(method="gam",mapping = aes(y = Grdz_gesamt),col = "blue", formula = y ~ s(x, k= 21),data=Can_dat_Heizg_15_20)+
   geom_smooth(method = "lm", mapping = aes(x =datetime,y= Grdz_gesamt),col = "purple", linetype =2, data=Can_dat_Heizg_15_20)+
   geom_point(mapping= aes(x=Jahr,y= Grdz_yr),data=Can_grdz.yr)+
-  ggtitle("Energy-demand Bad Cannstatt",
-          subtitle = "Room-Heating + Water-Heating
+  ggtitle("Heating-Energy  Bad Cannstatt",
+          subtitle = "Room- + Water-Heating
   smoothing with 21 basis functions")+
   labs(x ="", y = " ~ Gradzahl")
 ggsave("Can_energy_15_20.png",path = save.figs)
