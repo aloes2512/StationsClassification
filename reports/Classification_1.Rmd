@@ -15,10 +15,18 @@ library(lubridate)
 ```
 
 ## Classification of Immission Measurements 2000 to 2020 in Baden Wuerttemberg
-### longterm trends calculated from recordings at sampling stations###
+### Longterm trends calculated from recordings at sampling stations###
 
 
-The objective of this study is to understand the systematic dependence of the concentrations of some atmospheric gases on main variables as the emissions from various sources as motor vehicles, power-plants, industrial processes and the variation of environmental parameters as temperature, solar irradiation, humidity and their interdependence. The data are time series measured at various sampling stations. 
+The objective of this study is to understand the systematic dependence of the concentrations of  atmospheric gases on  variables as the emissions from various sources:  
+-- motor vehicles,   
+-- power-plants,   
+-- industrial processes     
+and the variation of environmental parameters: 
+-- temperature,    
+-- solar irradiation (radiation balance), 
+-- humidity  
+and their interdependence. The data are time series measured at various sampling stations. 
 
 ```{r echo =FALSE}
 BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
@@ -28,7 +36,7 @@ Stationsliste <-readRDS(file.path(BW_Rdat_path,"Stationsliste.rds"))
 ### location  of selected sampling stations
 
 
-Data are measured with 99  sampling stations by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) equipped with 780 instruments.Measurements at some stations started as early as 1976. From these some typical stations have been selected for analysis. Data can be downloaded from this url "https://https://udo.lubw.baden-wuerttemberg.de/public" In addition data from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz" have been included.
+Data are measured at 99  sampling stations by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) equipped with 780 instruments. Measurements at some stations started as early as 1976.  From these some typical stations have been selected for analysis. Data can be downloaded from this url "https://https://udo.lubw.baden-wuerttemberg.de/public" In addition data from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz" have been included.
 
 ```{r echo = FALSE}
 knitr::kable(Stationsliste)
@@ -67,10 +75,9 @@ As example of NO2 1-h mean values, measured at Stuttgart- Bad Cannstatt at the r
 ![Stg_Can](./figs/NO2_trend_20_years_Can.png)
 
  The plot suggests some systematic causes:  
--- the immissions vary annually with maximum in winter month
--- average immissions show a ling term trend with  reduction of about $0.4 [μg/m^3]per year$
--- there are long periods without zero 1-h measurements (2016 to 2018) and others reaching zero over longer time periods(2001)
---  outliers indicate a strong variation of the immissions at the location of the sampling instrument which may be caused also by instability of the instruments
+--  the immissions vary annually with maximum in winter month
+--  average immissions show are  reduced at a rate of $0.4 [μg/m^3]per year$
+--  outliers indicate a strong variation of the immissions or instability of the instruments
 
 These observations need to be taken into account with interpretation of the data.
 
@@ -117,10 +124,10 @@ Mean values, variance and median of $NO_2$ and $O_3$ concentrations are very dif
 BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 
 ```
-The table is arranged in ascending order of **mean NO2 immissions measurements** calculated from 1-h measurements  recorded and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). The mean calculated on the 20 year interval of all recorded data.   
---in **rural** environment  immissions are less than  **$10 [μg/m^3]$**.  
---**urban background** immissions range from **$10 [μg/m^3]$ to $30 [μg/m^3]$**.    
---immissions  close to **main traffic** streets are bigger than **$40 [μg/m^3]$**.
+The table is arranged in ascending order of **mean NO2 immissions measurements** calculated from 1-h measurements  recorded and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). The mean is calculated   Of all recorded data (21 year interval).   
+-- in **rural** environment  immissions are less than  **$10 [μg/m^3]$**.  
+-- **urban background** immissions range from **$10 [μg/m^3]$ to $30 [μg/m^3]$**.    
+-- immissions  close to **main traffic** streets are bigger than **$40 [μg/m^3]$**.
 
 ## linear trends of immissions at sampling stations
 
@@ -128,21 +135,23 @@ The table is arranged in ascending order of **mean NO2 immissions measurements**
 ![BW_NO2 trends](./figs/BW_NO2_linear_regression.png)
 
 
-# Some observations from the trend :
--- average immissions at the three rural stations stay **below $10 [μg/m^3]$**  
--- at the rural stations the mean ** $mean  NO_2 $ ** values are  independent of the time 
--- the regression lines (20 year mean) from stations located in urban background  
-   are in between $25 [μg/m^3]$ and  $40 [μg/m^3]$
--- at background stations **rate of reduction of ** $mean  NO_2 $ ** is low** compared  with traffic stations     
--- at main streets (heavy traffic) the **reduction per year** of $mean  NO_2 $ is high   
+# Observations from the linear trend :
+-- average immissions at the three rural stations are **less than $10 [μg/m^3]$**  
+-- at the rural stations the mean ** $mean  NO_2 $ ** values are  independent of time 
+-- the negative slope of regression lines (21 year mean) from stations located in urban background  
+-- at most of urban background stations **rate of reduction (chg_py) ** of $mean  NO_2 $ ** is low** compared  with traffic stations     
+-- at main streets (heavy traffic) big  **reduction per year** of $mean  NO_2 $    
 -- 20-year $mean  NO_2 $ exceeded **limits considered dangerous** to human health **close to main streets**
--- at Stuttgart "Am Neckartor" the highest $mean  NO_2 $ were recorded     
+-- at Stuttgart "Am Neckartor" the maximum $mean  NO_2 $ were recorded     
    --- starting in 2003 with annual mean greater $125 [μg/m^3]$ which were reduced to $50 [μg/m^3]$in 2020    
-   --- long trend "Am Neckartor"  indicates levels smaller $40 [μg/m^3]$
+   --- long time trend "Am Neckartor"  indicates levels smaller $40 [μg/m^3]$
 -- at some stations the *rate of reduction (chg_py)* is  higher than at the station "Am Neckartor"
 
-Selecting a typical NO2- sampling station located in *rural environment (Schwarzwald Süd)* , a second measuring in *urban background (Stuttgart Bad-Cannstatt)* and a third at roadside of a *main street (Ludwigsburg Friedrichstrasse)* shows the different trends of averaged immission. 
-A reduction with a high rate at the station measuring traffic immissions, medium reduction rate at urban back ground and nearly invisible ate at rural back ground.
+
+## More details to distinguish rural, urban and traffic immission
+
+Selecting a typical NO2- sampling station located in *rural environment (Schwarzwald Süd)* , a second measuring in *urban background (Stuttgart Bad-Cannstatt)* and a third at roadside of a *main street (Ludwigsburg Friedrichstrasse)* shows the different trends (slope) of averaged immission. 
+
 
 ![](figs/NO2_Trend_exampl.png)
 
@@ -161,9 +170,27 @@ kable(NO2_chg.py,digits =1)
 
 ```
 
-The  mean yearly reductions ranges from $-5.1[μg/(m^3*y)]$ at the "Hauptstätter Strasse" and no change at all $0 [μg/(m^3*y)]$ at the rural background  station "Schwarzwald-Süd".
+Mean yearly reductions(chg_py) range from $-5.1[μg/(m^3*y)]$ at the "Hauptstätter Strasse" and no change at all $0 [μg/(m^3*y)]$ at the rural background  station "Schwarzwald-Süd".
 
 
+## Effect of Heating on $NO_2, NO, O_3
+
+### Mean Temperatures
+Temperatures vary within a wide range. To study the dependance of immissions it is necessary to define a method for calculation of a small number of parameters characterizing local temperatures. To visualize various methods have been applied to the 1- h temperature measurements made at Stuttgart Bad Cannstatt:
+-- arithmetic means of 8760 measurements made within calendar year (black dots)
+-- regression line of the 1-h measurements covering 21 years
+-- fitting the  21 years data with  5 gaussian functions 
+-- fitting the  21 years data with  10 gaussian functions
+![](./figs/model_Temp.png)
+Interpretation of immission-dependencies does depend on the selected model.
+The simplest model is the regression line as reference. As only two parameters ** intersect** and **slope** are sufficient to describe temperature and trends. 
+In Germany at temperatures **above 15 C no heating** is necessary. Therefor at these temperatures are no NO2- emissions caused by burning fuel for heating. This can be used to determine the effect of house heating on measured immissions.
+Comparing the linear regression  at hours with no heating (red line) to hours with heating (green line). The plot of the data measured at Bad Cannstatt shows that about $10 [μg/m^3]$ of immissions are caused by burning fuels to keep rooms at temperature. 
+
+![](./figs/room.ht_NO2_Can.png)
+
+
+Temperature and or heating does have effects on other atmospheric components also. The linear trends of NO2, NO immission and O3 concentrations measured at Stuttgart Bad Cannstatt are shown for the two conditions heating / no heating with the following plot:
 ```{r, echo=FALSE}
 dat_path<- "~/documents/Luftqualitaet/Daten/BW_Rdat"
 load(file.path(dat_path,"BW.RData"))
@@ -193,12 +220,9 @@ NO, NO2, O3, Temperature",
           subtitle = "Heating hours Stgt.-Bad Cannstatt")+
   labs(x= "", y = "Values(μg/m3,m/s,°C)")
 ```
-## Effect of Heating on $NO_2, NO, O_3
 
-In Germany at temperatures lower than 15 C no heating is necessary.
-Comparing the linear regression  at hours with no heating(red line) to hours with heating(green line). The plot of the data measured at Bad Cannstatt shows that about $10 [μg/m^3]$ of immissions are caused by burning fuels to keep rooms at temperature.  
 
-![](./figs/room.ht_NO2_Can.png)
+
 
 
 Heating does have an annual periodicity which can be filtered and visualized with 21 gaussian smoothing functions with the aid of  gam- smoothing. An algorithm first published by S. Wood (Wood, S.N. (2003) Thin plate regression splines. J.R.Statist.Soc.B 65(1):95-114) and implemented in R (https://www.rdocumentation.org/packages/mgcv/versions/1.8-38/topics/gam)

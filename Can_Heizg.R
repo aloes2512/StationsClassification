@@ -1,7 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(modelr)# add_predictions
-library(xts)
+library(xts) # na.locf
 library(mgcv)
 library(mgcViz)
 library(broom)
@@ -42,7 +42,7 @@ Heiz_kenndat<- function(df) {
 (Heiz_kenndat(Can_dat))
 # Yearly averages
 Can_dat<- Can_dat %>% 
-          mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr = as_factor(Yr),
+          mutate(Yr = as.integer(format(datetime,format= "%Y")),Yr_fct = as_factor(Yr),
                  Hzg = ifelse(15-Temp>=0,TRUE,FALSE),
                 Grdz_Hzg = ifelse(Hzg,20-Temp,0))
  
@@ -52,9 +52,21 @@ Can_dat_Yr<-  Can_dat %>%  dplyr::select(-datetime)%>%
                               NO2_Jahr_mittel= mean(NO2,na.rm=TRUE),
                               Grdz_Jahr_mittel = mean(Grdz_Hzg,na.rm = TRUE)*1.2,
                               Hz_std= sum(Hzg,na.rm = TRUE),
-                              Hz_proz= Hz_std/n())
+                              Hz_proz= Hz_std/n(),
+                              Yr_fct = factor(max(Yr)),
+                              Temp_mx= max(Temp,na.rm= TRUE))
+#Jahresmittelwert der Temperaturen
 Can_dat_Yr%>% summary()
-
+Can_dat_Yr%>% ggplot(aes(x = Yr))+
+  geom_point(aes(y= T_Jahr_mittel))+
+  geom_smooth(method = "gam",mapping= aes(x= Yr, y= T_Jahr_mittel),formula = y~ s(x, k=5))+
+  geom_smooth(method = "gam",mapping= aes(x= Yr, y= Temp),formula = y~ s(x, k=10), data= Can_dat)+
+  geom_smooth(method ="lm",mapping= aes(x= Yr, y= T_Jahr_mittel),formula = y~ x)+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+  ggtitle("Mean Temperatures Stg.Bad Cannstatt",
+          subtitle = "calculated from 1-h recordings")+
+  labs( x= "")
+ggsave("model_Temp.png",path = save.figs)
 Can_dat_Yr %>% 
   ggplot(aes(x = Yr, y=Grdz_Jahr_mittel))+
         geom_point(col = "blue")+
