@@ -22,11 +22,13 @@ The objective of this study is to understand the systematic dependence of the co
 -- motor vehicles,   
 -- power-plants,   
 -- industrial processes     
-and the variation of environmental parameters: 
+and the variation of environmental parameters:   
 -- temperature,    
--- solar irradiation (radiation balance), 
+-- solar irradiation (radiation balance),   
 -- humidity  
-and their interdependence. The data are time series measured at various sampling stations. 
+and their **interdependence**. 
+Data are measured at 99  sampling stations by LUBW: **Landesanstalt für Umwelt Baden-Württemberg**. These are equipped with 780 instruments for various atmospheric components.
+To understand the effects of human emission sources on the immissions, the dependence of  location and the interaction with natural atmospheric components typical stations have been selected.
 
 ```{r echo =FALSE}
 BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
@@ -36,7 +38,7 @@ Stationsliste <-readRDS(file.path(BW_Rdat_path,"Stationsliste.rds"))
 ### Location  of selected sampling stations
 
 
-Data are measured at 99  sampling stations by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) equipped with 780 instruments for varioois atmospheric components. At some stations measurements started as early as 1976. Some typical stations have been selected for analysis of immissions and interaction of constituents. Data can be downloaded from  url:"https://https://udo.lubw.baden-wuerttemberg.de/public". Some missing data have been included from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz".
+ At some stations measurements started as early as 1976. Some typical stations have been selected for analysis of immissions and interaction of constituents. Data can be downloaded from  url:"https://https://udo.lubw.baden-wuerttemberg.de/public". Some missing data have been included from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz".
 
 ```{r echo = FALSE}
 knitr::kable(Stationsliste)
