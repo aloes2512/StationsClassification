@@ -33,29 +33,22 @@ BW_Rdat_path<- "~/Documents/Luftqualitaet/Daten/BW_Rdat/"
 BW_list_tbl <-readRDS(file.path(BW_Rdat_path,"BW_list_tbl.rds"))
 Stationsliste <-readRDS(file.path(BW_Rdat_path,"Stationsliste.rds"))
 ```
-### location  of selected sampling stations
+### Location  of selected sampling stations
 
 
-Data are measured at 99  sampling stations by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) equipped with 780 instruments. Measurements at some stations started as early as 1976.  From these some typical stations have been selected for analysis. Data can be downloaded from this url "https://https://udo.lubw.baden-wuerttemberg.de/public" In addition data from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz" have been included.
+Data are measured at 99  sampling stations by LUBW (Landesanstalt für Umwelt Baden-Wuerttemberg) equipped with 780 instruments for varioois atmospheric components. At some stations measurements started as early as 1976. Some typical stations have been selected for analysis of immissions and interaction of constituents. Data can be downloaded from  url:"https://https://udo.lubw.baden-wuerttemberg.de/public". Some missing data have been included from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz".
 
 ```{r echo = FALSE}
 knitr::kable(Stationsliste)
 station_url<-"https://udo.lubw.baden-wuerttemberg.de/public"
-browseURL(station_url)
+#browseURL(station_url)
 ```
 
 3 sampling stations are located in rural environment,    7 stations located at main streets,   10 sampling urban background immissions. In addition 2 stations operated by  the city of Stuttgart one located downtown on top of a building about 20 m above the street level the second at the office building in urban background. 
-An overview of the locations:
+The positions are shown in this map derived from Google Maps:
 
 
 ![](figs/BW_Uebersichtskarte.png)
-
-
-
-
-
-
-
 
 
 ```{r stations,echo = FALSE}
@@ -70,18 +63,14 @@ readRDS( file.path(BW_Rdat_path,"Stationsliste.rds"))
 ```
 
 
-As example of NO2 1-h mean values, measured at Stuttgart- Bad Cannstatt at the roadside are shown in the plot "NO2-immissions 20 years". The data exhibit a systematic trend but are poised by various errors as illustrated with the dots (each representing a  1- h mean) plotted together with red linear regression line over 20 years indicating a mean reduction.There is also a systematic annual variation with high values during winter time and low values during the summer month:
+As example of NO2 1-h time series, measured at Stuttgart- Bad Cannstatt at urban background are shown in the plot "NO2-immissions 20 years". The data exhibit a systematic trends suggest periodic dependencies and  are poised by various effects as illustrated with the dots (each representing a  1- h mean) plotted together with red linear regression line over 20 years demonstrating a reduction trend.In addition a systematic annual variation with high values during winter time and low values during the summer month is visible with the plot:
 
 ![Stg_Can](./figs/NO2_trend_20_years_Can.png)
 
- The plot suggests some systematic causes:  
---  the immissions vary annually with maximum in winter month
---  average immissions show are  reduced at a rate of $0.4 [μg/m^3]per year$
---  outliers indicate a strong variation of the immissions or instability of the instruments
-
-These observations need to be taken into account with interpretation of the data.
-
-
+ This suggests some systematic dependencies:    
+--  the immissions vary annually with maximum in winter month  
+--  average immissions are  reduced at a rate of $0.4 [μg/m^3]per year$  
+--  outliers indicate a strong variation of the immissions (or may be  instability of the instruments)   
 
 
 ```{r echo=FALSE}
@@ -89,53 +78,49 @@ comp_detect <- function(df,cmp) {
   exst<- cmp %in% names(df)
   return(exst)
 }
-BW_mean_NO2<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"NO2"),
-                                                  mean(x$NO2,na.rm=TRUE),NA)))
-BW_median_NO2<- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"NO2"),
-                                                  median(x$NO2,na.rm=TRUE),NA )))
-BW_var_NO2 <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect (x,"NO2"),
-                                                  var(x$NO2,na.rm=TRUE),NA)))
-BW_mean_WG <- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"WG"),
-                                                  mean(x$WG,na.rm=TRUE),NA )))
-BW_var_WG <-map_dbl(BW_list_tbl,function(x) (ifelse(comp_detect (x,"WG"),
-                                                  var(x$WG,na.rm=TRUE),NA) ))
-BW_mean_O3<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"O3"),
-                                                         mean(x$O3,na.rm=TRUE),NA)))
-BW_median_O3<- map_dbl(BW_list_tbl,function(x) (ifelse (comp_detect (x,"O3"),
-                                                         median(x$O3,na.rm=TRUE),NA )))
-BW_var_O3 <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect (x,"O3"),
-                                                        var(x$O3,na.rm=TRUE),NA)))
+BW_mean_NO2<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"NO2"),mean(x$NO2,na.rm=TRUE),NA)))
+BW_var_NO2 <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect(x,"NO2"),var(x$NO2,na.rm=TRUE),NA)))
+BW_mean_NO<-map_dbl(BW_list_tbl , function(x) ( ifelse (comp_detect(x,"NO"),mean(x$NO,na.rm=TRUE),NA)))
+BW_var_NO <- map_dbl(BW_list_tbl, function(x) (ifelse (comp_detect(x,"NO"),var(x$NO,na.rm=TRUE),NA)))
+BW_mean_WG <- map_dbl(BW_list_tbl,function(x) (ifelse 
+(comp_detect (x,"WG"),mean(x$WG,na.rm=TRUE),NA )))
+BW_var_WG <-map_dbl(BW_list_tbl,function(x) (ifelse
+(comp_detect (x,"WG"),var(x$WG,na.rm=TRUE),NA) ))
+BW_mean_O3<-map_dbl(BW_list_tbl , function(x) ( ifelse 
+(comp_detect(x,"O3"),mean(x$O3,na.rm=TRUE),NA)))
+BW_var_O3 <- map_dbl(BW_list_tbl, function(x) (ifelse 
+(comp_detect (x,"O3"),var(x$O3,na.rm=TRUE),NA)))
 
 BW_statistic <- tibble (Station =  names(BW_list_tbl),
                                 NO2_mean=  BW_mean_NO2,
-                                NO2_median=BW_median_NO2,
                                 NO2_var =  BW_var_NO2,
                                 WG_mean =  BW_mean_WG,
                                 WG_var =   BW_var_WG,
                                 O3_mean =  BW_mean_O3,
-                                O3_median= BW_median_O3,
                                 O3_var =   BW_var_O3)
 ```
-## Key  immissions data from 23 sampling stations 
+### Key  immissions data from 23 sampling stations 
 
-Mean values, variance and median of $NO_2$ and $O_3$ concentrations are very different for the 22 stations analyzed: 
+#### Some first observations:###
+--  21 year means  of $NO_2$ are smaller  than $10[μg/m^3]$at rural stations and exceed $40[μg/m^3]$ close to main routes   
+--  $O_3$ concentrations seem to independent of traffic emissions 
 
 ```{r echo =FALSE}
 BW_statistic%>% arrange(NO2_mean)%>% knitr::kable(digits=1)
 
 ```
-The table is arranged in ascending order of **mean NO2 immissions measurements** calculated from 1-h measurements  recorded and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). The mean is calculated   Of all recorded data (21 year interval).   
+The table is arranged in ascending order of **mean NO2 immissions measurements** calculated from 1-h measurements  recorded and published by LUBW (Landesanstalt für Umwelt Baden Wuerttemberg). The mean is calculated   of all recorded data (21 year interval).   
 -- in **rural** environment  immissions are less than  **$10 [μg/m^3]$**.  
 -- **urban background** immissions range from **$10 [μg/m^3]$ to $30 [μg/m^3]$**.    
 -- immissions  close to **main traffic** streets are bigger than **$40 [μg/m^3]$**.
 
-## linear trends of immissions at sampling stations
+### Linear trends of immissions at sampling stations
 
 
 ![BW_NO2 trends](./figs/BW_NO2_linear_regression.png)
 
 
-# Observations from the linear trend :
+### Observations from the linear trend :
 -- average immissions at the three rural stations are **less than $10 [μg/m^3]$**  
 -- at the rural stations the mean ** $mean  NO_2 $ ** values are  independent of time 
 -- the negative slope of regression lines (21 year mean) from stations located in urban background  
@@ -148,14 +133,14 @@ The table is arranged in ascending order of **mean NO2 immissions measurements**
 -- at some stations the *rate of reduction (chg_py)* is  higher than at the station "Am Neckartor"
 
 
-## More details to distinguish rural, urban and traffic immission
+### More details to distinguish rural, urban and traffic immission
 
-Selecting a typical NO2- sampling station located in *rural environment (Schwarzwald Süd)* , a second measuring in *urban background (Stuttgart Bad-Cannstatt)* and a third at roadside of a *main street (Ludwigsburg Friedrichstrasse)* shows the different trends (slope) of averaged immission. 
+Selecting 3 typical NO2- sampling station one located in *rural environment (Schwarzwald Süd)* , a second measuring  *urban background (Stuttgart Bad-Cannstatt)* and a third at roadside of a *main street (Ludwigsburg Friedrichstrasse)* shows the different trends (slope) of averaged immission. 
 
 
 ![](figs/NO2_Trend_exampl.png)
 
-## rate of immission reductions
+### Rate of immission reductions
 ```{r echo = FALSE}
 ysec<- 60*60*24*365
 slp.model <- function (df) {
@@ -173,7 +158,7 @@ kable(NO2_chg.py,digits =1)
 Mean yearly reductions(chg_py) range from $-5.1[μg/(m^3*y)]$ at the "Hauptstätter Strasse" and no change at all $0 [μg/(m^3*y)]$ at the rural background  station "Schwarzwald-Süd".
 
 
-## Effect of Heating on $NO_2, NO, O_3
+### Effect of Heating on $NO_2, NO, O_3
 
 ### Mean Temperatures
 Temperatures vary within a wide range. To study the dependance of immissions it is necessary to define a method for calculation of a small number of parameters characterizing local temperatures. To visualize various methods have been applied to the 1- h temperature measurements made at Stuttgart Bad Cannstatt:
@@ -191,8 +176,9 @@ Comparing the linear regression  at hours with no heating (red line) to hours wi
 
 
 Temperature and or heating does have effects on other atmospheric components also. The linear trends of NO2, NO immission and O3 concentrations measured at Stuttgart Bad Cannstatt are shown for the two conditions heating / no heating with the following plot:
-```{r, echo=FALSE}
-dat_path<- "~/documents/Luftqualitaet/Daten/BW_Rdat"
+```{r, echo=TRUE}
+dat_path = "/Users/alfloeffler/Documents/Luftqualitaet/Daten/BW_Rdat"
+
 load(file.path(dat_path,"BW.RData"))
 summary(BW.all_data)
 Can_data<-BW.all_data$Stg.Can$Stg.Can.no2 %>% left_join(BW.all_data$Stg.Can$Stg.Can.no)
@@ -202,7 +188,7 @@ Can_data_list<-BW.all_data$Stg.Can
 Can_comps<-names(BW.all_data$Stg.Can)
 length(Can_comps) #8
 Can_tbl<- BW.all_data$Stg.Can$Stg.Can.no2%>% dplyr::select(-NO2)
-for (i  in 1:8) {
+for (i  in seq_along(BW.all_data$Stg.Can)) {
   df <- BW.all_data$Stg.Can[[i]]
   Can_tbl <- left_join(Can_tbl,df, by=c("station", "datetime"))
 }
@@ -256,7 +242,7 @@ Can_data_list<-BW.all_data$Stg.Can
 Can_comps<-names(BW.all_data$Stg.Can)
 length(Can_comps) #8
 Can_tbl<- BW.all_data$Stg.Can$Stg.Can.no2%>% dplyr::select(-NO2)
-for (i  in 1:8) {
+for (i  in seq_along(BW.all_data$Stg.Can)) {
   df <- BW.all_data$Stg.Can[[i]]
   Can_tbl <- left_join(Can_tbl,df, by=c("station", "datetime"))
 }
