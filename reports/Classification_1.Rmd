@@ -38,7 +38,7 @@ Stationsliste <-readRDS(file.path(BW_Rdat_path,"Stationsliste.rds"))
 ### Location  of selected sampling stations
 
 
- At some stations measurements started as early as 1976. Some typical stations have been selected for analysis of immissions and interaction of constituents. Data can be downloaded from  url:"https://https://udo.lubw.baden-wuerttemberg.de/public". Some missing data have been included from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz".
+ At some stations measurements started as early as 1976. Typical stations have been selected for analysis of immissions and interaction of constituents. Data can be downloaded from  url:"https://https://udo.lubw.baden-wuerttemberg.de/public". Some missing data have been included from 2 stations operated by the city of Stuttgart "Amt für Umweltschutz".
 
 ```{r echo = FALSE}
 knitr::kable(Stationsliste)
@@ -46,8 +46,11 @@ station_url<-"https://udo.lubw.baden-wuerttemberg.de/public"
 #browseURL(station_url)
 ```
 
-3 sampling stations are located in rural environment,    7 stations located at main streets,   10 sampling urban background immissions. In addition 2 stations operated by  the city of Stuttgart one located downtown on top of a building about 20 m above the street level the second at the office building in urban background. 
-The positions are shown in this map derived from Google Maps:
+To cover the conditions of the varying air-quality:  --  3 sampling stations are located in rural environment,   
+--  7 stations located at main streets,   
+--  10 sampling urban background immissions   
+--  the 2 stations operated by  the city of Stuttgart are located downtown on top of a building about 20 m above the street level the second at the office building.   
+The positions are shown in the map derived from Google Maps:
 
 
 ![](figs/BW_Uebersichtskarte.png)
@@ -65,11 +68,11 @@ readRDS( file.path(BW_Rdat_path,"Stationsliste.rds"))
 ```
 
 
-As example of NO2 1-h time series, measured at Stuttgart- Bad Cannstatt at urban background are shown in the plot "NO2-immissions 20 years". The data exhibit a systematic trends suggest periodic dependencies and  are poised by various effects as illustrated with the dots (each representing a  1- h mean) plotted together with red linear regression line over 20 years demonstrating a reduction trend.In addition a systematic annual variation with high values during winter time and low values during the summer month is visible with the plot:
+As example of NO2 1-h time series, measured at Stuttgart- Bad Cannstatt at urban background are shown in the plot "NO2-immissions 20 years". The data exhibit a systematic trend and  suggest periodic dependencies. The data are poised by stochastic effects as illustrated with the dots (each representing a  1- h mean). To determine systematic dependencies models need to be found to describe the measured 1-h data. A very simple model is the  red linear regression line calculated from 21 years measurements. It shows that the immissions did decrease. In addition an  annual variation with high values during winter time and low values during the summer month is suggested with the plot:
 
 ![Stg_Can](./figs/NO2_trend_20_years_Can.png)
 
- This suggests some systematic dependencies:    
+   
 --  the immissions vary annually with maximum in winter month  
 --  average immissions are  reduced at a rate of $0.4 [μg/m^3]per year$  
 --  outliers indicate a strong variation of the immissions (or may be  instability of the instruments)   
@@ -101,7 +104,7 @@ BW_statistic <- tibble (Station =  names(BW_list_tbl),
                                 O3_mean =  BW_mean_O3,
                                 O3_var =   BW_var_O3)
 ```
-### Key  immissions data from 23 sampling stations 
+### Key  immission data from 23 sampling stations 
 
 #### Some first observations:###
 --  21 year means  of $NO_2$ are smaller  than $10[μg/m^3]$at rural stations and exceed $40[μg/m^3]$ close to main routes   
